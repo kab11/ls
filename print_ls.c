@@ -32,8 +32,10 @@ t_ls *new_node(char *name)
 	return(new_node);
 }
 
+/* this functions like ls -a */
 t_ls *store_file_info(DIR *dirp)
 {
+	struct stat sb;
 	struct dirent *dp;
 	t_ls *new_list;
 	t_ls *cur;
@@ -49,6 +51,8 @@ t_ls *store_file_info(DIR *dirp)
 	while ((dp = readdir(dirp)) != NULL)
 	{
 		node = new_node(dp->d_name);
+		lstat(node->name, &sb);
+		printf("%s\t %lld\n", node->name, sb.st_size);
 		if (new_list == NULL)
 			new_list = node;
 		else if (ft_strcmp(node->name, new_list->name) <= 0)
