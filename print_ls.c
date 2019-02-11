@@ -12,6 +12,8 @@
 
 #include "ft_ls.h"
 
+//https://aljensencprogramming.wordpress.com/tag/st_mode/
+
 /* Need to create a linked list of structures that can each store infomation about
  * each file in the current directory:
  * 1) name 							7) file mode 	
