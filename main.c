@@ -51,15 +51,50 @@
 		  uid_t		st_uid;	     -->user ID of owner 
 		  gid_t		st_gid;	     -->group ID of owner 
 		  dev_t		st_rdev;     -->device type (if inode device) 
-		  off_t		st_size;     -->total size, in bytes; th size of symlink is len of pathname it wontains w/o trailing NULL
+		  off_t		st_size;     -->total size, in bytes; //the size of symlink is len of pathname it contains w/o trailing NULL
 		  blksize_t	st_blksize;  -->blocksize for filesystem I/O 
 		  blkcnt_t	st_blocks;   -->size of file in 512-byte blocks 
 		  time_t	st_atime;    -->time of last access 
 		  time_t	st_mtime;    -->time of last modification 
 		  time_t	st_ctime;    -->time of last change 
 	};
-	**lstat is identical to stat except in the case of a symbolic link, where the link itself is stat-ed,
-	not the file that it refers to
+	lstat(): is identical to stat except in the case of a symbolic link, where it does not follow the symbolic linke;
+			 its obtains information about the link itself rather than the link's target; calling lstat on a broken link
+			 (a link that points to a inaccessible/nonexistent target) does NOT result in an error 
+
+	stat(): on a symbolic link: it follows the link and you can get info about the file the link points to,
+			not about the symbolic link itsself; S_ISLNK will never be true for the result of stat; calling stat on a 
+			broken link (a link that points to a nonexistent/inaccessible target) results in an error 
+	
+	mtime: returns the date/time when the file was last modified, updated, or changed by the system
+*/
+
+/*
+	getpwuid(): searches the password database for the given user uid, always returning the first one encountered 
+
+	struct passwd {
+                   char    *pw_name;       --> user name 
+                   char    *pw_passwd;     --> encrypted password 
+                   uid_t   pw_uid;         --> user uid 
+                   gid_t   pw_gid;         --> user gid 
+                   time_t  pw_change;      --> password change time 
+                   char    *pw_class;      --> user access class 
+                   char    *pw_gecos;      --> Honeywell login info 
+                   char    *pw_dir;        --> home directory 
+                   char    *pw_shell;      --> default shell 
+                   time_t  pw_expire;      --> account expiration 
+                   int     pw_fields;      --> internal: fields filled in 
+           };
+*/
+
+/* 
+	getgrgid(): search the group database for the group id given by gid; idential group names cause UDF behavior
+	struct group {
+                   char    *gr_name;       --> group name 
+                   char    *gr_passwd;     --> group password 
+                   gid_t   gr_gid;         --> group id 
+                   char    **gr_mem;       --> group members 
+           };
 */
 
 /* ls omits hidden dotfiles (the option '-a' forces ls to show them) */

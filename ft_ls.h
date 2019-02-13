@@ -14,6 +14,7 @@
 # define FT_LS_H
 
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <uuid/uuid.h>
 
 #include <dirent.h>
@@ -21,8 +22,8 @@
 #include <pwd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include <unistd.h>
-
 #include "libft.h"
 
 /* x = target variable; y = mask */
@@ -45,7 +46,16 @@ typedef struct s_ls
 {
 	int flags;
 	char *name;
-	int ino;
+	double size;
+
+	unsigned int ino;
+	int links;
+	char *o_name;
+	char *gp_name;
+	int bytes;
+	int tbytes;
+	char *time;
+
 	struct s_ls *next;
 }				t_ls;
 

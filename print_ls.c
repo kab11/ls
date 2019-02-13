@@ -24,6 +24,11 @@
  * 6) pathname
 */
 
+/* lstat(): declare a struct stat
+ *			call lstat() passing as the firs parameter the file we want metadata of
+ *			and as the second arument the address of the struct stat variable we declared)
+ */
+
 t_ls *new_node(char *name)
 {
 	t_ls *new_node;
@@ -37,8 +42,10 @@ t_ls *new_node(char *name)
 /* this functions like ls -a */
 t_ls *store_file_info(DIR *dirp)
 {
-	struct stat sb;
+	struct stat file;
 	struct dirent *dp;
+	struct group *gp;
+	struct passwd *pwd;
 	t_ls *new_list;
 	t_ls *cur;
 	t_ls *trail;
@@ -52,11 +59,28 @@ t_ls *store_file_info(DIR *dirp)
 	i = 0;
 	while ((dp = readdir(dirp)) != NULL)
 	{
+		lstat(dp->d_name, &file);
 		node = new_node(dp->d_name);
-		lstat(node->name, &sb);
-		printf("%s\t %lld\n", node->name, sb.st_size);
+		if (file.st_mode & S_IFMT)
+		{
+			node->ino = file.st_ino; /* inode nummber */
+			/*mode*/
+			node->links = file.st_nlink; /* number of links */
+
+			pwd = getpwuid(file.st_uid); /* owner name */
+			node->o_name = pwd->pw_name;
+
+			gp = getgrgid(file.st_gid); /* group name */
+			node->gp_name = gp->gr_name;
+
+			node->bytes = file.st_size;/* number of bytes */
+
+			node->tbytes += file.st_blocks; /* size of file in 512-byte blocks */
+
+			node->time = ft_strsub(ft_strdup(ctime(&file.st_ctime)), 4, 12); /* strsub string start = 4, end = 12*/
+		}
 		if (new_list == NULL)
-			new_list = node;
+			new_list = node; 
 		else if (ft_strcmp(node->name, new_list->name) <= 0)
 		{
 			node->next = new_list;
@@ -87,7 +111,9 @@ int printf_curr_dir(char *path)
 {
 	DIR *dirp;
 	t_ls *file_list;
+	int total_bytes;
 
+	total_bytes = 0;
 	dirp = opendir(path); /* opens present directory */
 	if (!dirp)
 		return (-1);
@@ -95,9 +121,11 @@ int printf_curr_dir(char *path)
 	file_list = store_file_info(dirp);
 	while (file_list != NULL)
 	{
-		printf("%s\n", file_list->name);
+		total_bytes += file_list->tbytes;
+		printf("%-20s\t%u\t%d\t%s\t%s\t%d\t%s\n", file_list->name, file_list->ino, file_list->links, file_list->o_name, file_list->gp_name, file_list->bytes, file_list->time);
 		file_list = file_list->next;
 	}
+	printf("total: %d\n", total_bytes);
 	closedir(dirp);
 	return (0);
 }
