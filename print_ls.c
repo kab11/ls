@@ -29,6 +29,50 @@
  *			and as the second arument the address of the struct stat variable we declared)
  */
 
+char get_file_type(int file_type, char *str)
+{
+	int i;
+
+	i = 0;
+	if (!file_type || !str)
+		return ('\0');
+	S_IFREG == file_type ? str[i] = '-' : 0;
+	S_IFBLK == file_type ? str[i] = 'b' : 0;
+	S_IFCHR == file_type ? str[i] = 'c' : 0;
+	S_IFDIR == file_type ? str[i] = 'd' : 0;
+	S_IFLNK == file_type ? str[i] = 'l' : 0;
+	S_IFIFO == file_type ? str[i] = 'p' : 0;
+	S_IFSOCK == file_type ? str[i] = 's' : 0;
+
+	return (str[i]);
+}
+
+char *get_permisions(int file_type, int file_mode)
+{
+	char *str;
+	int i;
+
+	i = 10;
+	if (!(str = ft_strnew(i)))
+		return (NULL);
+	else
+	{
+		get_file_type(file_type, str);
+		i = 1;
+		str[i++] = S_IRUSR & file_mode ? 'r' : '-';
+		str[i++] = S_IWUSR & file_mode ? 'w' : '-';
+		str[i++] = S_IXUSR & file_mode ? 'x' : '-';
+		str[i++] = S_IRGRP & file_mode ? 'r' : '-';
+		str[i++] = S_IWGRP & file_mode ? 'w' : '-';
+		str[i++] = S_IXGRP & file_mode ? 'x' : '-';
+		str[i++] = S_IROTH & file_mode ? 'r' : '-';
+		str[i++] = S_IWOTH & file_mode ? 'w' : '-';
+		str[i++] = S_IXOTH & file_mode ? 'x' : '-';
+	}
+	str[i] = '\0';
+	return (str);
+}
+
 t_ls *new_node(char *name)
 {
 	t_ls *new_node;
@@ -51,6 +95,7 @@ t_ls *store_file_info(DIR *dirp)
 	t_ls *trail;
 	t_ls *node;
 	int i;
+	int x;
 
 	new_list = NULL;
 	cur = NULL;
@@ -61,10 +106,12 @@ t_ls *store_file_info(DIR *dirp)
 	{
 		lstat(dp->d_name, &file);
 		node = new_node(dp->d_name);
-		if (file.st_mode & S_IFMT)
+		if ((x = file.st_mode & S_IFMT))
 		{
-			node->ino = file.st_ino; /* inode nummber */
-			/*mode*/
+			// printf("%-20s\t%s\n", dp->d_name, get_permisions(x, file.st_mode));
+			node->permission = get_permisions(x, file.st_mode);
+			// node->ino = file.st_ino; /* inode nummber */
+
 			node->links = file.st_nlink; /* number of links */
 
 			pwd = getpwuid(file.st_uid); /* owner name */
@@ -122,7 +169,7 @@ int printf_curr_dir(char *path)
 	while (file_list != NULL)
 	{
 		total_bytes += file_list->tbytes;
-		printf("%-20s\t%u\t%d\t%s\t%s\t%d\t%s\n", file_list->name, file_list->ino, file_list->links, file_list->o_name, file_list->gp_name, file_list->bytes, file_list->time);
+		printf("%-10s\t%d\t%s\t%s\t%d\t%s\t%s\n", file_list->permission, file_list->links, file_list->o_name, file_list->gp_name, file_list->bytes, file_list->time, file_list->name);
 		file_list = file_list->next;
 	}
 	printf("total: %d\n", total_bytes);

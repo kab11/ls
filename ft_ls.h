@@ -48,7 +48,7 @@ typedef struct s_ls
 	char *name;
 	double size;
 
-	unsigned int ino;
+	char *permission;
 	int links;
 	char *o_name;
 	char *gp_name;
