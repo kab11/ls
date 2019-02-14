@@ -110,13 +110,13 @@ int main(int argc, char **argv)
 	if (argc == 1)
 	{
 		//handle only ls
-		printf_curr_dir(".");
+		get_file_info(".");
 	}
 	else if (argc > 1)
 	{
 		// check for flags
 		parse_flags(argc, argv, &ls);
-		printf_curr_dir(argv[1]);
+		get_file_info(argv[1]);
 	}
 
 	return (0);

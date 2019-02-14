@@ -63,6 +63,7 @@ int main(int argc, char **argv);
 
 void parse_flags(int ac, char **av, t_ls *ls);
 
-int printf_curr_dir(char *path);
+int get_file_info(char *path);
+char *get_permissions(int file_type, int file_mode);
 
 #endif
