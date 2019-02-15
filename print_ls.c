@@ -45,6 +45,25 @@ void populate_struct(t_ls *node, struct stat file, int x)
 	struct passwd *pwd;
 
 	node->permission = get_permissions(x, file.st_mode);
+	if ((ft_strchr(node->permission, 'l')))
+	{
+		size_t bufsize;
+		char *buf;
+		ssize_t len;
+		char *tmp;
+
+		bufsize = file.st_size + 1;
+		buf = (char *)malloc(bufsize);
+		len = readlink(node->name, buf, bufsize);
+		buf[len] = '\0';
+		tmp = ft_strjoin(node->name, " -> ");
+		free(tmp);
+		tmp = ft_strjoin(tmp, buf);
+		node->sym = tmp;
+		// free(tmp);
+	}
+	else
+		node->sym = " "; /*** TEMPORARY VISUAL SOLUTION NEED TO FIX!!! T_T ***/
 	node->links = file.st_nlink; /* number of links */
 
 	pwd = getpwuid(file.st_uid); /* owner name */
@@ -78,7 +97,7 @@ void traverse_list(t_ls *new_list, t_ls *node)
 	}
 }
 
-/* this functions like ls -a */
+/* NEED TO REWRITE TO NOT MAKE IT SORT SO SOON SO IT CAN HANDLE ALL FLAGS!!!! */
 t_ls *store_file_info(DIR *dirp)
 {
 	struct stat file;
@@ -124,7 +143,7 @@ int get_file_info(char *path)
 	while (file_list != NULL)
 	{
 		total_bytes += file_list->tbytes;
-		printf("%-10s\t%d\t%s\t%s\t%d\t%s\t%s\n", file_list->permission, file_list->links, file_list->o_name, file_list->gp_name, file_list->bytes, file_list->time, file_list->name);
+		printf("%-10s\t%d\t%s\t%s\t%d\t%s\t%s\t%s\n", file_list->permission, file_list->links, file_list->o_name, file_list->gp_name, file_list->bytes, file_list->time, file_list->name, file_list->sym);
 		file_list = file_list->next;
 	}
 	printf("total: %d\n", total_bytes);

@@ -15,8 +15,10 @@
 char get_file_type(int file_type, char *str)
 {
 	int i;
+	int sym;
 
 	i = 0;
+	sym = 0;
 	if (!file_type || !str)
 		return ('\0');
 	S_IFREG == file_type ? str[i] = '-' : 0;
@@ -26,6 +28,9 @@ char get_file_type(int file_type, char *str)
 	S_IFLNK == file_type ? str[i] = 'l' : 0;
 	S_IFIFO == file_type ? str[i] = 'p' : 0;
 	S_IFSOCK == file_type ? str[i] = 's' : 0;
+
+	// if (str[i] == 'l')
+	// 	BIT_ON(sym, PER_l);
 
 	return (str[i]);
 }

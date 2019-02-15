@@ -39,7 +39,8 @@ enum flag
 	OPT_l = 1 << 1,
 	OPT_R = 1 << 2,
 	OPT_r = 1 << 3,
-	OPT_t = 1 << 4
+	OPT_t = 1 << 4,
+	PER_l = 1 << 5
 };
 
 typedef struct s_ls
@@ -55,6 +56,8 @@ typedef struct s_ls
 	int bytes;
 	int tbytes;
 	char *time;
+
+	char *sym;
 
 	struct s_ls *next;
 }				t_ls;
