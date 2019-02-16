@@ -108,16 +108,9 @@ int main(int argc, char **argv)
 
 	ft_bzero(&ls, sizeof(ls));
 	if (argc == 1)
-	{
-		//handle only ls
 		get_file_info(".");
-	}
-	else if (argc > 1)
-	{
-		// check for flags
+	if (argc > 1)
 		parse_flags(argc, argv, &ls);
-		get_file_info(argv[1]);
-	}
 
 	return (0);
 }

@@ -45,6 +45,8 @@ void populate_struct(t_ls *node, struct stat file, int x)
 	struct passwd *pwd;
 
 	node->permission = get_permissions(x, file.st_mode);
+
+	/* make some holder/indicator that value is a symlink so when printing if/else statement?  */
 	if ((ft_strchr(node->permission, 'l')))
 	{
 		size_t bufsize;
@@ -62,8 +64,7 @@ void populate_struct(t_ls *node, struct stat file, int x)
 		node->sym = tmp;
 		// free(tmp);
 	}
-	else
-		node->sym = " "; /*** TEMPORARY VISUAL SOLUTION NEED TO FIX!!! T_T ***/
+
 	node->links = file.st_nlink; /* number of links */
 
 	pwd = getpwuid(file.st_uid); /* owner name */
@@ -143,7 +144,7 @@ int get_file_info(char *path)
 	while (file_list != NULL)
 	{
 		total_bytes += file_list->tbytes;
-		printf("%-10s\t%d\t%s\t%s\t%d\t%s\t%s\t%s\n", file_list->permission, file_list->links, file_list->o_name, file_list->gp_name, file_list->bytes, file_list->time, file_list->name, file_list->sym);
+		printf("%-10s\t%d\t%s\t%s\t%d\t%s\t%s\n", file_list->permission, file_list->links, file_list->o_name, file_list->gp_name, file_list->bytes, file_list->time, file_list->name);
 		file_list = file_list->next;
 	}
 	printf("total: %d\n", total_bytes);
