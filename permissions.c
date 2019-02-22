@@ -12,51 +12,42 @@
 
 #include "ft_ls.h"
 
-char get_file_type(int file_type, char *str)
+void get_file_type(struct stat file, char *str)
 {
 	int i;
-	int sym;
+	int x;
 
 	i = 0;
-	sym = 0;
-	if (!file_type || !str)
-		return ('\0');
-	S_IFREG == file_type ? str[i] = '-' : 0;
-	S_IFBLK == file_type ? str[i] = 'b' : 0;
-	S_IFCHR == file_type ? str[i] = 'c' : 0;
-	S_IFDIR == file_type ? str[i] = 'd' : 0;
-	S_IFLNK == file_type ? str[i] = 'l' : 0;
-	S_IFIFO == file_type ? str[i] = 'p' : 0;
-	S_IFSOCK == file_type ? str[i] = 's' : 0;
-
-	// if (str[i] == 'l')
-	// 	BIT_ON(sym, PER_l);
-
-	return (str[i]);
+	x = file.st_mode & S_IFMT;
+	S_ISREG(x) ? str[i] = '-' : 0;
+	S_ISBLK(x) ? str[i] = 'b' : 0;
+	S_ISCHR(x) ? str[i] = 'c' : 0;
+	S_ISDIR(x) ? str[i] = 'd' : 0;
+	S_ISLNK(x) ? str[i] = 'l' : 0;
+	S_ISFIFO(x) ? str[i] = 'p' : 0;
+	S_ISSOCK(x) ? str[i] = 's' : 0;
 }
 
-char *get_permissions(int file_type, int file_mode)
+char *get_permissions(struct stat file)
 {
 	char *str;
 	int i;
 
 	i = 10;
-	if (!(str = ft_strnew(i)))
-		return (NULL);
-	else
-	{
-		get_file_type(file_type, str);
-		i = 1;
-		str[i++] = S_IRUSR & file_mode ? 'r' : '-';
-		str[i++] = S_IWUSR & file_mode ? 'w' : '-';
-		str[i++] = S_IXUSR & file_mode ? 'x' : '-';
-		str[i++] = S_IRGRP & file_mode ? 'r' : '-';
-		str[i++] = S_IWGRP & file_mode ? 'w' : '-';
-		str[i++] = S_IXGRP & file_mode ? 'x' : '-';
-		str[i++] = S_IROTH & file_mode ? 'r' : '-';
-		str[i++] = S_IWOTH & file_mode ? 'w' : '-';
-		str[i++] = S_IXOTH & file_mode ? 'x' : '-';
-	}
+	str = ft_strnew(i);
+	
+	get_file_type(file, str);
+	i = 1;
+	str[i++] = S_IRUSR & file.st_mode ? 'r' : '-';
+	str[i++] = S_IWUSR & file.st_mode ? 'w' : '-';
+	str[i++] = S_IXUSR & file.st_mode ? 'x' : '-';
+	str[i++] = S_IRGRP & file.st_mode ? 'r' : '-';
+	str[i++] = S_IWGRP & file.st_mode ? 'w' : '-';
+	str[i++] = S_IXGRP & file.st_mode ? 'x' : '-';
+	str[i++] = S_IROTH & file.st_mode ? 'r' : '-';
+	str[i++] = S_IWOTH & file.st_mode ? 'w' : '-';
+	str[i++] = S_IXOTH & file.st_mode ? 'x' : '-';
+	
 	str[i] = '\0';
 	return (str);
 }

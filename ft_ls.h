@@ -43,30 +43,52 @@ enum flag
 	PER_l = 1 << 5
 };
 
+typedef struct s_info
+{
+	char		*permission;
+	int			links;
+	char		*o_name;
+	char		*gp_name;
+	int			bytes;
+	char		*ctime;
+	int			int_mtime;
+	char		*mtime_str;
+	char		*name;
+	char		*sym_link;
+	int			total_bytes;
+	char		*pwd;
+	struct s_info	*next;
+}				t_info;
+
 typedef struct s_ls
 {
 	int flags;
-	char *name;
-	double size;
+	int total;
+	int is_a_file;
+	struct stat stat;
 
-	char *permission;
-	int links;
-	char *o_name;
-	char *gp_name;
-	int bytes;
-	int tbytes;
-	char *time;
-
-	char *sym;
-
-	struct s_ls *next;
+	double gt_link;
+	double gt_byte;
+	double link_len;
+	double byte_len;
+	struct s_info *dir_info;
 }				t_ls;
 
 int main(int argc, char **argv);
 
 void parse_flags(int ac, char **av, t_ls *ls);
 
-int get_file_info(char *path);
-char *get_permissions(int file_type, int file_mode);
+void get_file_info(char *path, t_ls *ls);
+char *get_permissions(struct stat file);
+void sort_by_time(t_info **headRef);
+
+void ls_print_and_format(t_ls *ls);
+
+int ft_numlen(int num);
+void link_padding(int num, t_ls *ls);
+void byte_padding(int num, t_ls *ls);
+void get_format(t_ls *ls);
+void get_total_bytes(t_ls *ls);
+
 
 #endif

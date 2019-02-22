@@ -33,7 +33,9 @@ int flag_handler(int i, char **av, t_ls *ls)
 	return (i);
 }
 
-int file_handler(int i, char **av, t_ls *ls)
+/* Need to figure out situation when there is a flag (-l or -g) before a file name */
+
+int file_errors(int i, char **av, t_ls *ls)
 {
 	while (av[i])
 	{
@@ -46,10 +48,10 @@ int file_handler(int i, char **av, t_ls *ls)
 		{
 			struct stat path;
 			lstat(av[i], &path);
-			if (S_ISREG(path.st_mode) && ls->flags == 0)
+			if (S_ISREG(path.st_mode) && (ls->flags & OPT_l) == 0)
 				printf("%s\n", av[i]);
 			else
-				get_file_info(av[i]);
+				ls->is_a_file = 1;
 		}
 		i++;
 	}
@@ -61,14 +63,11 @@ void parse_flags(int ac, char **av, t_ls *ls)
 	int i;
 
 	i = 1;
-	while (i < ac)
+	if (i < ac)
 	{
 		if (av[i][0] == '-' && av[i])
 			i = flag_handler(i, av, ls);
 		if (av[i] && av[i][0] && av[i][0] != '-')
-			i = file_handler(i, av, ls);
-		break;
+			i = file_errors(i, av, ls);
 	}
-	if (ls->flags > 0)
-		get_file_info(".");
 }

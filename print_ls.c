@@ -29,125 +29,130 @@
  *			and as the second arument the address of the struct stat variable we declared)
  */
 
-t_ls *new_node(char *name)
-{
-	t_ls *new_node;
+/* ERROR HANDLING:
+ * 		-> opendir: if unsuccessful opendir returns a NULL pointer; EACCES (read permission 
+ * 		denied for the directory names by dirname), EMFILE (process has too many files open),
+ * 		ENFILE (system cannot support any additional open files atm), ENOMEM (not enough memory available)
+ *
+ *
+ * 		-> readdir: if there re no more entries in the directory or an error is detected readdir returns
+ * 					a NULL pointer; to distinguish between EOD or an error 'errno' must be set to zero
+ * 					before calling readdir
+ *		**readdir points to a buffer within the DIR object; each call to readdir causes the data in
+ *			the buffer to be overwritten; d_name (or whatever) needs to be copied if its needed later 
+*/
 
-	new_node = malloc(sizeof(t_ls));
-	ft_bzero(new_node, sizeof(t_ls));
-	new_node->name = name;
+/* -R:
+ *		- opendir checks to see if the directory exists
+ *		- printdir makes a call to chdr to the directory specified
+ *		- while entries returned by readdir exist, the program checks whether the entry is a directory
+ *		- if it isnt, it prints an intended file entry
+ *		- if it is a directory the printdir function calls itself (recursion) with the subdirectory name
+ *		- recursion ends when there are no more subdirectories to process
+ *		- then the current directory is closed via closedir
+*/
+
+t_info *new_node()
+{
+	t_info *new_node;
+
+	new_node = (t_info*)malloc(sizeof(t_info));
+	ft_bzero(new_node, sizeof(t_info));
 	return(new_node);
 }
 
-void populate_struct(t_ls *node, struct stat file, int x)
+t_info *sort_file_info(t_info *node, t_info *list)
 {
+	t_info *cur;
+	t_info *trail;
+
+	cur = list;
+	if (list == NULL)
+		list = node; 
+	else if (ft_strcmp(node->name, list->name) <= 0)
+	{
+		node->next = list;
+		list = node;
+	}
+	else
+	{
+		while (cur->next != NULL && ft_strcmp(node->name, cur->name) > 0)
+		{
+			trail = cur;
+			cur = cur->next;
+		}
+		if (ft_strcmp(node->name, cur->name) > 0)
+			cur->next = node;
+		else
+		{
+			trail->next = node;
+			node->next = cur;
+		}
+	}
+	return (list);
+}
+
+void symlink_handler(t_info *node, t_ls *ls)
+{
+	size_t bufsize;
+	ssize_t len;
+	char *buf;
+	char *tmp;
+
+	bufsize = ls->stat.st_size + 1;
+	buf = (char *)malloc(bufsize);
+	len = readlink(node->name, buf, bufsize);
+	buf[len] = '\0';
+	tmp = ft_strjoin(node->name, " -> ");
+	tmp = ft_strjoin(tmp, buf);
+	node->sym_link = ft_strdup(tmp);
+	free(tmp);
+}
+
+void read_file_info(t_info *node, t_ls *ls)
+{
+	lstat(node->pwd, &ls->stat);
 	struct group *gp;
 	struct passwd *pwd;
 
-	node->permission = get_permissions(x, file.st_mode);
-
-	/* make some holder/indicator that value is a symlink so when printing if/else statement?  */
+	node->permission = get_permissions(ls->stat);
 	if ((ft_strchr(node->permission, 'l')))
-	{
-		size_t bufsize;
-		char *buf;
-		ssize_t len;
-		char *tmp;
-
-		bufsize = file.st_size + 1;
-		buf = (char *)malloc(bufsize);
-		len = readlink(node->name, buf, bufsize);
-		buf[len] = '\0';
-		tmp = ft_strjoin(node->name, " -> ");
-		free(tmp);
-		tmp = ft_strjoin(tmp, buf);
-		node->sym = tmp;
-		// free(tmp);
-	}
-
-	node->links = file.st_nlink; /* number of links */
-
-	pwd = getpwuid(file.st_uid); /* owner name */
-	node->o_name = pwd->pw_name;
-			
-	gp = getgrgid(file.st_gid);  /* group name */
-	node->gp_name = gp->gr_name;
-			
-	node->bytes = file.st_size;/* number of bytes */
-	node->tbytes += file.st_blocks; /* size of file in 512-byte blocks */
-	node->time = ft_strsub(ft_strdup(ctime(&file.st_ctime)), 4, 12); /* strsub string start = 4, end = 12*/
-}
-
-void traverse_list(t_ls *new_list, t_ls *node)
-{
-	t_ls *cur;
-	t_ls *trail;
-
-	cur = new_list;
-	while (cur->next != NULL && ft_strcmp(node->name, cur->name) > 0)
-	{
-		trail = cur;
-		cur = cur->next;
-	}
-	if (ft_strcmp(node->name, cur->name) > 0)
-		cur->next = node;
-	else
-	{
-		trail->next = node;
-		node->next = cur;
-	}
-}
-
-/* NEED TO REWRITE TO NOT MAKE IT SORT SO SOON SO IT CAN HANDLE ALL FLAGS!!!! */
-t_ls *store_file_info(DIR *dirp)
-{
-	struct stat file;
-	struct dirent *dp;
-	t_ls *node;
-	t_ls *new_list;
-	int i;
-	int x;
-
-	i = 0;
-	while ((dp = readdir(dirp)) != NULL)
-	{
-		lstat(dp->d_name, &file);
-		node = new_node(dp->d_name);
-		if ((x = file.st_mode & S_IFMT))
-			populate_struct(node, file, x);
-		if (new_list == NULL)
-			new_list = node; 
-		else if (ft_strcmp(node->name, new_list->name) <= 0)
-		{
-			node->next = new_list;
-			new_list = node;
-		}
-		else
-			traverse_list(new_list, node);
-	}
-	return (new_list);
+		symlink_handler(node, ls);
+	node->links = ls->stat.st_nlink; /* number of links */
+	pwd = getpwuid(ls->stat.st_uid); /* owner name */
+	node->o_name = pwd->pw_name;		
+	gp = getgrgid(ls->stat.st_gid);  /* group name */
+	node->gp_name = gp->gr_name;		
+	node->bytes = ls->stat.st_size;/* number of bytes */
+	node->total_bytes += ls->stat.st_blocks; /* size of file in 512-byte blocks */
+	node->ctime = ft_strsub(ft_strdup(ctime(&ls->stat.st_ctime)), 4, 12); /* strsub string start = 4, end = 12*/
+	node->int_mtime = ls->stat.st_mtime;
+	node->mtime_str = ft_strsub(ft_strdup(ctime(&ls->stat.st_mtime)), 4, 12);
 }
 
 
-int get_file_info(char *path)
+void get_file_info(char *path, t_ls *ls)
 {
 	DIR *dirp;
-	t_ls *file_list;
-	int total_bytes;
+	struct dirent *dp;
+	t_info *node;
 
-	total_bytes = 0;
 	dirp = opendir(path); /* opens present directory */
-	if (!dirp)
-		return (-1);
-
-	file_list = store_file_info(dirp);
-	while (file_list != NULL)
+	if (dirp == NULL)
 	{
-		total_bytes += file_list->tbytes;
-		printf("%-10s\t%d\t%s\t%s\t%d\t%s\t%s\n", file_list->permission, file_list->links, file_list->o_name, file_list->gp_name, file_list->bytes, file_list->time, file_list->name);
-		file_list = file_list->next;
+		perror("opendir");
+		exit(-1);
 	}
-	printf("total: %d\n", total_bytes);
+	while ((dp = readdir(dirp)) != NULL)
+	{
+		node = new_node();
+		node->name = ft_strdup(dp->d_name);
+		node->pwd = ft_strjoin(path, "/");
+		node->pwd = ft_strjoin(node->pwd, node->name);
+		read_file_info(node, ls);
+		ls->total += ls->stat.st_blocks;
+		ft_bzero(&ls->stat, sizeof(ls->stat));
+		ls->dir_info = sort_file_info(node, ls->dir_info);
+	}
 	closedir(dirp);
-	return (0);
 }

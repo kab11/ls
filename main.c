@@ -102,15 +102,61 @@
 
 #include "ft_ls.h"
 
+// void		something(char *)
+// {
+// 	t_ls	dir;
+
+// 	bzeroi)(dir);
+// 	get_file_info(&dir, char *);
+// 	print_info(&dir);
+// 	if (-R)
+// 		something(new_file_path);
+// 	free_everythign(&dir);
+// }
+
+// int check_dir(char *name)
+// {
+// 	DIR *ds;
+
+// 	ds = opendir(file->name);
+// 	if (ds == NULL)
+// 		return (-1);
+// 	closedir(ds);
+// 	ds = NULL;
+// 	return (0);
+// }
+
+void main_handler(char *path, t_ls *ls)
+{
+	get_file_info(path, ls);
+	ls_print_and_format(ls);
+	// if (ls->flags & OPT_R)
+	// {
+	// 	t_info *file;
+	// 	char * cur_path;
+	// 	int i;
+
+	// 	file = ls->dir_info;
+	// 	cur_path = path;
+	// 	i = check_dir(file->name);
+	// 	if (i == 0)
+	// 	{
+	// 		cur_path = 
+	// 	}
+	// 	get_file_info()
+	// }
+}
+
+//make a loop while arg still call main handler; otherwise i just use it with flags of course ~casey
+
 int main(int argc, char **argv)
 {
 	t_ls ls;
 
 	ft_bzero(&ls, sizeof(ls));
-	if (argc == 1)
-		get_file_info(".");
 	if (argc > 1)
 		parse_flags(argc, argv, &ls);
+	main_handler(".", &ls);
 
 	return (0);
 }

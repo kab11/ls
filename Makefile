@@ -26,7 +26,10 @@ CFLAGS	=	-Wall -Wextra -Werror
 SRC		=	main.c \
 			handle_flags.c \
 			permissions.c \
-			print_ls.c 
+			print_ls.c \
+			format_and_print.c \
+			sorting_functions.c \
+			utilities.c
 
 
 INC_FT	=	-I libft
