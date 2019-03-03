@@ -81,6 +81,8 @@ void main_handler(char *path, int flags)
 
 	ft_bzero(&ls, sizeof(ls));
 	get_file_info(path, &ls);
+	if (flags & OPT_t)
+		sort_by_time(&ls.dir_info);
 	ls_print_and_format(&ls, flags);
 
 	if (flags & OPT_R)

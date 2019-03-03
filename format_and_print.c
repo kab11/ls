@@ -90,12 +90,12 @@ void		not_poopy_back(t_info **list, t_ls *ls, int flags)
 	not_poopy_back(&foo->next, ls, flags);
 }
 
-void print(t_info *cur, t_ls *ls, int flags)
+void print(t_info **cur, t_ls *ls, int flags)
 {
 	if ((flags & OPT_r) == 8)
-		poopy_back(&cur, ls, flags);
+		poopy_back(cur, ls, flags);
 	else
-		not_poopy_back(&cur, ls, flags);
+		not_poopy_back(cur, ls, flags);
 }
 
 void		ls_print_and_format(t_ls *ls, int flags)
@@ -114,7 +114,5 @@ void		ls_print_and_format(t_ls *ls, int flags)
 			ft_putchar('\n');
 		}
 	}
-	if (flags & OPT_t)
-		sort_by_time(&cur);
-	print(cur, ls, flags);
+	print(&cur, ls, flags);
 }
