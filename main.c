@@ -6,157 +6,108 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/02 18:07:06 by kblack            #+#    #+#             */
-/*   Updated: 2019/02/02 18:07:09 by kblack           ###   ########.fr       */
+/*   Updated: 2019/02/26 21:39:45 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/* OBJECTIVE: recreate ls; ls is used to list the contents of directories */
-
-/* 
- *	FLAGS:	-l: long listing format	-a: include entries which satrt with .
- *			-R: recurse				-t: sort by mtime
- *			-r: reverse sort order
-*/
-
-/* displays the list of files inside a directory and information about a file 
- * 1 file per line is okay
- * - manage all types of files (e.g. symbolic links, ...) i
- * - need to manage user errors (e.g. premission denied and directory/file doesn't exist)
- * - include major and minor device numbers 
- * - hanlde 'b' and 'c' that are specific to certain devices and in \dev 
- * - (-lG) manage colors */
-
-/* opendir(): opens the current directory (indicated by ".") and rturn a pointer to the 
- * 			  directory stream 
- * readdir(): returns a pointer to the next directory entry (dirent structure); returns NULL
- * 			  once it reaches the end of the directory stream or if an error occurred 
- * closedir(): closes directory stream associated with dirp; alos closes the fd associated with dirp*/
-
-/*	struct dirent {
-	 	ino_t          d_ino;        -->inode number 
-	   	off_t          d_off;        -->offset to the next dirent 
-    	unsigned short d_reclen;     -->length of this record 
-    	unsigned char  d_type;       -->type of file; not supported
-    	                                by all file system types 
-    	char           d_name[256];  -->filename 
-	}; 
-	~inode: a datastructure that stores all info about a file except its name and its actual data
-*/
-
-/* struct stat {
-		  dev_t		st_dev;	     -->device 
-		  ino_t		st_ino;	     -->inode 
-		  mode_t	st_mode;     -->protection 
-		  nlink_t	st_nlink;    -->number of hard links 
-		  uid_t		st_uid;	     -->user ID of owner 
-		  gid_t		st_gid;	     -->group ID of owner 
-		  dev_t		st_rdev;     -->device type (if inode device) 
-		  off_t		st_size;     -->total size, in bytes; //the size of symlink is len of pathname it contains w/o trailing NULL
-		  blksize_t	st_blksize;  -->blocksize for filesystem I/O 
-		  blkcnt_t	st_blocks;   -->size of file in 512-byte blocks 
-		  time_t	st_atime;    -->time of last access 
-		  time_t	st_mtime;    -->time of last modification 
-		  time_t	st_ctime;    -->time of last change 
-	};
-	lstat(): is identical to stat except in the case of a symbolic link, where it does not follow the symbolic linke;
-			 its obtains information about the link itself rather than the link's target; calling lstat on a broken link
-			 (a link that points to a inaccessible/nonexistent target) does NOT result in an error 
-
-	stat(): on a symbolic link: it follows the link and you can get info about the file the link points to,
-			not about the symbolic link itsself; S_ISLNK will never be true for the result of stat; calling stat on a 
-			broken link (a link that points to a nonexistent/inaccessible target) results in an error 
-	
-	mtime: returns the date/time when the file was last modified, updated, or changed by the system
-*/
-
-/*
-	getpwuid(): searches the password database for the given user uid, always returning the first one encountered 
-
-	struct passwd {
-                   char    *pw_name;       --> user name 
-                   char    *pw_passwd;     --> encrypted password 
-                   uid_t   pw_uid;         --> user uid 
-                   gid_t   pw_gid;         --> user gid 
-                   time_t  pw_change;      --> password change time 
-                   char    *pw_class;      --> user access class 
-                   char    *pw_gecos;      --> Honeywell login info 
-                   char    *pw_dir;        --> home directory 
-                   char    *pw_shell;      --> default shell 
-                   time_t  pw_expire;      --> account expiration 
-                   int     pw_fields;      --> internal: fields filled in 
-           };
-*/
-
-/* 
-	getgrgid(): search the group database for the group id given by gid; idential group names cause UDF behavior
-	struct group {
-                   char    *gr_name;       --> group name 
-                   char    *gr_passwd;     --> group password 
-                   gid_t   gr_gid;         --> group id 
-                   char    **gr_mem;       --> group members 
-           };
-*/
-
-/* ls omits hidden dotfiles (the option '-a' forces ls to show them) */
-
-
 #include "ft_ls.h"
 
-// void		something(char *)
-// {
-// 	t_ls	dir;
+/*
+** OBJECTIVE: recreate ls; ls is used to list the contents of directories
+**
+**	FLAGS:	-l: long listing format	-a: include entries which start with "."
+**			-R: recurse				-t: sort by mtime
+**			-r: reverse sort order
+**	1) get all files in the directory
+**	2) print the "ls" output
+**	3) go throgh all the files in the directory
+**	4) check if the current file being lookd at is a directory
+**	5) if so, recursively list that directory
+*/
 
-// 	bzeroi)(dir);
-// 	get_file_info(&dir, char *);
-// 	print_info(&dir);
-// 	if (-R)
-// 		something(new_file_path);
-// 	free_everythign(&dir);
-// }
-
-// int check_dir(char *name)
-// {
-// 	DIR *ds;
-
-// 	ds = opendir(file->name);
-// 	if (ds == NULL)
-// 		return (-1);
-// 	closedir(ds);
-// 	ds = NULL;
-// 	return (0);
-// }
-
-void main_handler(char *path, t_ls *ls)
+void		free_file(t_info *file)
 {
-	get_file_info(path, ls);
-	ls_print_and_format(ls);
-	// if (ls->flags & OPT_R)
-	// {
-	// 	t_info *file;
-	// 	char * cur_path;
-	// 	int i;
-
-	// 	file = ls->dir_info;
-	// 	cur_path = path;
-	// 	i = check_dir(file->name);
-	// 	if (i == 0)
-	// 	{
-	// 		cur_path = 
-	// 	}
-	// 	get_file_info()
-	// }
+	(file->name != NULL) ? free(file->name) : 0;
+	(file->pwd != NULL) ? free(file->pwd) : 0;
+	(file->permission != NULL) ? free(file->permission) : 0;
+	(file->sym_link != NULL) ? free(file->sym_link) : 0;
+	(file->mtime != NULL) ? free(file->mtime) : 0;
+	free(file);
+	file = NULL;
 }
 
-//make a loop while arg still call main handler; otherwise i just use it with flags of course ~casey
+void		free_all_files(t_info *files)
+{
+	t_info		*temp;
 
-int main(int argc, char **argv)
+	while (files != NULL)
+	{
+		temp = files->next;
+		free_file(files);
+		files = temp;
+	}
+}
+
+void print_recursive(char *path, t_ls *ls, int flags)
+{
+	t_info *cur;
+	char *file_path;
+	char *tmp;
+
+	cur = ls->dir_info;
+	while (cur != NULL)
+	{
+		if (ft_strcmp(cur->name, ".") == 0 || ft_strcmp(cur->name, "..") == 0)
+			;
+		else if (cur->name[0] == '.' && (flags & OPT_a) != 1)
+			;
+		else if (cur->permission[0] == 'd')
+		{
+			tmp = ft_strjoin(path, "/");
+			file_path = ft_strjoin(tmp, cur->name);
+			free(tmp);
+			ft_putchar('\n');
+			ft_putstr(file_path);
+			ft_putstr(":\n");
+			main_handler(file_path, flags);
+		}
+		cur = cur->next;
+	}
+}
+
+void main_handler(char *path, int flags)
 {
 	t_ls ls;
 
 	ft_bzero(&ls, sizeof(ls));
-	if (argc > 1)
-		parse_flags(argc, argv, &ls);
-	main_handler(".", &ls);
+	get_file_info(path, &ls);
+	ls_print_and_format(&ls, flags);
 
+	if (flags & OPT_R)
+		print_recursive(path, &ls, flags);
+	free_all_files(ls.dir_info);
+}
+
+int main(int argc, char **argv)
+{
+	int flags;
+	int i;
+
+	i = 1;
+	flags = 0;
+	if (argc == 1)
+		main_handler(".", flags);
+	else if (argc > 1)
+	{
+		while (i < argc && argv[i][0] == '-')
+		{
+			flags |= flag_handler(argv[i]);
+			i++;
+		}
+		if (i == argc)
+			main_handler(".", flags);
+		else
+			parse_flags(argv + i, flags);
+	}
 	return (0);
 }

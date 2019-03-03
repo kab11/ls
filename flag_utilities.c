@@ -1,19 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr.c                                        :+:      :+:    :+:   */
+/*   flag_utilities.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/21 12:35:34 by kblack            #+#    #+#             */
-/*   Updated: 2018/08/27 18:54:39 by kblack           ###   ########.fr       */
+/*   Created: 2019/02/26 21:02:47 by kblack            #+#    #+#             */
+/*   Updated: 2019/02/26 21:02:59 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_ls.h"
 
-void	ft_putstr(char const *str)
+int				check_file(char *name)
 {
-	while (*str)
-		write(1, str++, 1);
+	struct stat	file_stats;
+
+	if (lstat(name, &file_stats) == -1)
+		return (-1);
+	return (0);
+}
+
+int				check_dir(char *name)
+{
+	DIR			*d_stream;
+
+	d_stream = opendir(name);
+	if (d_stream == NULL)
+		return (-1);
+	closedir(d_stream);
+	d_stream = NULL;
+	return (0);
 }

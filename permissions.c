@@ -6,16 +6,16 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/13 23:36:08 by kblack            #+#    #+#             */
-/*   Updated: 2019/02/13 23:36:19 by kblack           ###   ########.fr       */
+/*   Updated: 2019/02/26 20:56:34 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void get_file_type(struct stat file, char *str)
+void		get_file_type(struct stat file, char *str)
 {
-	int i;
-	int x;
+	int		i;
+	int		x;
 
 	i = 0;
 	x = file.st_mode & S_IFMT;
@@ -28,14 +28,13 @@ void get_file_type(struct stat file, char *str)
 	S_ISSOCK(x) ? str[i] = 's' : 0;
 }
 
-char *get_permissions(struct stat file)
+char		*get_permissions(struct stat file)
 {
-	char *str;
-	int i;
+	char	*str;
+	int		i;
 
 	i = 10;
 	str = ft_strnew(i);
-	
 	get_file_type(file, str);
 	i = 1;
 	str[i++] = S_IRUSR & file.st_mode ? 'r' : '-';
@@ -47,7 +46,6 @@ char *get_permissions(struct stat file)
 	str[i++] = S_IROTH & file.st_mode ? 'r' : '-';
 	str[i++] = S_IWOTH & file.st_mode ? 'w' : '-';
 	str[i++] = S_IXOTH & file.st_mode ? 'x' : '-';
-	
 	str[i] = '\0';
 	return (str);
 }

@@ -1,0 +1,235 @@
+**NOTES**
+
+-	metadata: data about data; info about size of a file, when it was created, or location on the system
+- 	directory: aka folder; a special type of file that associates file names with inodes
+	-	inodes: a data structure that stores all info about a file except its name and its actual data
+	-	when a program refers to a file by name, the OS looks up the coresponding inode enabling the 
+		system to obtain the info needed to perform further operations; the file name is not directly associated with the file BUT is and entry in a table with inode numbers  
+-	detaching file's anem from other metadata is what makes "hardlinks" possible 
+-	hardlink: contains a pointer directly to the inode holding the file's metadata; when a new hardlink
+	to a file is created both links share the same inode number because they are pointers and NOT a copy
+	of the file 
+
+inode contains:
+	1) the size of the file (in bytes) and its physical location on a HDD
+	2) the file's owner and group
+	3) the file's access permissions 
+	4) timestamps telling whe the inode was created, last modified, and last accessed
+	5) a reference count telling how many hardlinks point to the inode 
+
+-	stat: is a system call that is used by the operating system to obatin a files inode number and info 
+
+ways a filesystem can run out of space:
+	1) it can consume all the space for adding new data (i.e. to new or existing files) 
+		**this usually occurs first
+	2) it can use up all of the inodes; this can occur even is there is still space on the HDD
+
+-	size of the partition and average file size determine the number of inodes that need to be created
+-	'ls -i': shows the name of each object in the current directory + its inode number   
+-	'df -h': shows names and sizes of each mounted filesystem and how much of each is used and unsused 
+-	'df -hi': supplies info about inodes on ecah filesystem rather than about available space; total # of
+	inodes, # of free inodes, # of used inodes, and % of inodes used 
+
+normal link: is a filename-plus-pointer entry in a directory list
+symbolic link: a specially marked file containing the name of another file (has a filename-plus-pointer entry in a directory 
+			   the file referred to by the pointer contains a string that names another file)
+pathname:	a string consisting of an optional initial slash followed by a series of filenames seperated by slashes 
+readlink:	reads where a link points to
+
+RECURSION
+-	process in which a function calls itself directly or indirectly
+-	tail recursion: its when recursive call is that last thing executed by the function
+	-> tail-recursion can be optimized by the compiler; since the recursive call is the last statement, there is nothing left
+	   to do in the current function, so saving the current function's stack frame is of no use 
+-	linked lists: the struct node data structure is defined recursively, procedures that oerate on it can be implemented naturally
+	as recursive procedures
+							struct node
+							{
+								int data;	//some integer data
+								struct node *next; // pointer to another struct node
+							};
+
+							void list_print(struct node *list)
+							{
+								if (list != NULL)	// base case
+								{
+									printf("%d", list->data);	// print integer data followed by a space
+									list_print (list->next);	// recursive call on the next node
+								}
+							}
+-	Binary Tree: like the node for linked lists, a binart tree node is defined in terms of itself, recursively; there are 2 self-referential
+	pointers: left (pointing to the left sub-tree) and right (pointing to the right sub-tree)
+							struct node
+							{
+								int data;	// some integer data
+								struct node *left;	// pointer to the left subtree
+								struct node *rght;	// pointer to the right subtree
+							};
+
+							// test if tree_node contains i; return 1 if so, 0 if not
+							int tree_contains(struct node *tree_node, int i)
+							{
+								if (tree_node == NULL)
+									return 0;	// base case
+								else if (tree_node->data == i)
+									return 1;
+								else
+									return tree_contains(tree_node->left, i) || tree_contains(tree_node->right, i);
+							}
+
+							// in order traversal 
+							void tree_print(struct node *tree_node)
+							{
+								if (tree_node != NULL)	// base case
+								{
+									tree_print(tree_node->left);	// go left
+									printf("%d", tree_node->data);	// print the integer followed by a space
+									tree_print(tree_node->right);	// go right
+								}
+							}
+
+-	Tree Traversal (tree search): a form of graph traveral and refers to the process of visiting (checking and/or updating) each node in a 
+	tree data structure, exactly once
+	-> can store node in a stack or queue when they need to be deferred (stored for later visiting) 
+
+/*
+** lstat(): declare a struct stat
+**			call lstat() passing as the firs parameter the file we want metadata of
+**			and as the second arument the address of the struct stat variable we declared)
+**/
+
+/* 
+** ERROR HANDLING:
+** 		-> opendir: if unsuccessful opendir returns a NULL pointer; EACCES (read permission
+** 		denied for the directory names by dirname), EMFILE (process has too many files open),
+** 		ENFILE (system cannot support any additional open files atm), ENOMEM (not enough memory available)
+**
+**
+** 		-> readdir: if there re no more entries in the directory or an error is detected readdir returns
+** 					a NULL pointer; to distinguish between EOD or an error 'errno' must be set to zero
+** 					before calling readdir
+**		**readdir points to a buffer within the DIR object; each call to readdir causes the data in
+**			the buffer to be overwritten; d_name (or whatever) needs to be copied if its needed later
+*/
+
+/*
+** 	-R:
+**		- opendir checks to see if the directory exists
+**		- printdir makes a call to chdr to the directory specified
+**		- while entries returned by readdir exist, the program checks whether the entry is a directory
+**		- if it isnt, it prints an intended file entry
+**		- if it is a directory the printdir function calls itself (recursion) with the subdirectory name
+**		- recursion ends when there are no more subdirectories to process
+**		- then the current directory is closed via closedir
+*/
+
+/* 
+**	TIME:
+**		- Real time: time as measures either from some standard point (calendar time) or from some fixed point (elapsed time)
+**		- Process time: th amount of CPU time used by a process (usefule for performance optimization)
+**
+**		Calendar time:
+**			- UNIX represents time as a measure of second since the Epoch; 1 Jan 1970, UTC
+**			- stored as a signed int 'time_t'; on 32-bit Linux systems run into the "Year 2038" problem
+**			- time(): system call that returns the number of second since the Epoch, or -1 on error
+**			- ctime(): given a pointer to a time_t value it returns a 26-byte string containing the date and time in a standard format;
+**			  it automatically accounts for local timezone and DSt settings in its conversion
+*/
+
+/* displays the list of files inside a directory and information about a file 
+ * 1 file per line is okay
+ * - manage all types of files (e.g. symbolic links, ...) i
+ * - need to manage user errors (e.g. premission denied and directory/file doesn't exist)
+ * - include major and minor device numbers 
+ * - hanlde 'b' and 'c' that are specific to certain devices and in \dev 
+ * - (-lG) manage colors */
+
+/* opendir(): opens the current directory (indicated by ".") and rturn a pointer to the 
+ * 			  directory stream 
+ * readdir(): returns a pointer to the next directory entry (dirent structure); returns NULL
+ * 			  once it reaches the end of the directory stream or if an error occurred 
+ * closedir(): closes directory stream associated with dirp; alos closes the fd associated with dirp*/
+
+ 	lstat(): is identical to stat except in the case of a symbolic link, where it does not follow the symbolic linke;
+			 its obtains information about the link itself rather than the link's target; calling lstat on a broken link
+			 (a link that points to a inaccessible/nonexistent target) does NOT result in an error 
+
+	stat(): on a symbolic link: it follows the link and you can get info about the file the link points to,
+			not about the symbolic link itsself; S_ISLNK will never be true for the result of stat; calling stat on a 
+			broken link (a link that points to a nonexistent/inaccessible target) results in an error 
+	
+	mtime: returns the date/time when the file was last modified, updated, or changed by the system
+
+	/*
+	getpwuid(): searches the password database for the given user uid, always returning the first one encountered 
+
+	struct passwd {
+                   char    *pw_name;       --> user name 
+                   char    *pw_passwd;     --> encrypted password 
+                   uid_t   pw_uid;         --> user uid 
+                   gid_t   pw_gid;         --> user gid 
+                   time_t  pw_change;      --> password change time 
+                   char    *pw_class;      --> user access class 
+                   char    *pw_gecos;      --> Honeywell login info 
+                   char    *pw_dir;        --> home directory 
+                   char    *pw_shell;      --> default shell 
+                   time_t  pw_expire;      --> account expiration 
+                   int     pw_fields;      --> internal: fields filled in 
+           };
+*/
+
+/* 
+	getgrgid(): search the group database for the group id given by gid; idential group names cause UDF behavior
+	struct group {
+                   char    *gr_name;       --> group name 
+                   char    *gr_passwd;     --> group password 
+                   gid_t   gr_gid;         --> group id 
+                   char    **gr_mem;       --> group members 
+           };
+*/
+
+/* struct stat {
+		  dev_t		st_dev;	     -->device 
+		  ino_t		st_ino;	     -->inode 
+		  mode_t	st_mode;     -->protection 
+		  nlink_t	st_nlink;    -->number of hard links 
+		  uid_t		st_uid;	     -->user ID of owner 
+		  gid_t		st_gid;	     -->group ID of owner 
+		  dev_t		st_rdev;     -->device type (if inode device) 
+		  off_t		st_size;     -->total size, in bytes; //the size of symlink is len of pathname it contains w/o trailing NULL
+		  blksize_t	st_blksize;  -->blocksize for filesystem I/O 
+		  blkcnt_t	st_blocks;   -->size of file in 512-byte blocks 
+		  time_t	st_atime;    -->time of last access 
+		  time_t	st_mtime;    -->time of last modification 
+		  time_t	st_ctime;    -->time of last change 
+	};
+*/
+
+/* ls omits hidden dotfiles (the option '-a' forces ls to show them) */
+
+/*	struct dirent {
+	 	ino_t          d_ino;        -->inode number 
+	   	off_t          d_off;        -->offset to the next dirent 
+    	unsigned short d_reclen;     -->length of this record 
+    	unsigned char  d_type;       -->type of file; not supported
+    	                                by all file system types 
+    	char           d_name[256];  -->filename 
+	}; 
+*/
+
+/* Merge Sort
+
+	-	the idea of the algorithm is to sort smaller arrays and then combine those arrays together in sorted order
+	-	leverages recursion 
+	1) sort the left half of the array (assuming n > 1)
+	2) sort right half of the array (assuming n > 1)
+	3) merge the 2 halves together 	
+	O(n log n) time 
+ */
+
+/* listing by time modified */
+/* using merge sort: 
+	1) if head is NULL or if there is only 1 element then return
+	2) else divide the linked list into 2 halves
+	3) sort the 2 halves a and b
+	4) merge the sorted a and b and update the head pointer using the pointer to head */

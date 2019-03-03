@@ -1,19 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr.c                                        :+:      :+:    :+:   */
+/*   test_recursive.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/21 12:35:34 by kblack            #+#    #+#             */
-/*   Updated: 2018/08/27 18:54:39 by kblack           ###   ########.fr       */
+/*   Created: 2019/02/22 14:09:30 by kblack            #+#    #+#             */
+/*   Updated: 2019/02/22 14:09:38 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_ls.h"
 
-void	ft_putstr(char const *str)
+// typedef struct s_ls
+// {
+	
+// } t_ls;
+
+main_handler(char *path, t_ls *ls)
 {
-	while (*str)
-		write(1, str++, 1);
+	DIR *dirp;
+	struct dirent *dp;
+
+	dirp = opendir(path);
+
+	while ((dp = readdir(dirp)) != NULL)
+	{
+		lstat(path, )
+		printf("dp->%s\n", );
+	}
+}
+
+int main(int argc, char **argv)
+{
+	t_ls ls;
+
+	ft_bzero(&ls, sizeof(ls));
+	main_handler(".", &ls);
+	return (0);
 }

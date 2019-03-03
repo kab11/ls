@@ -1,0 +1,14 @@
+Observations:
+	1.	problem size: the problem size is either the size of the input or the value of the command-line argument 
+	 	(↑ size, ↑running time)
+
+Union-Find (dynamic connectivity)
+-	union command: creates connections between 2 objects
+-	find/connnected query: is there a path connecting the 2 objects?
+
+We assume "is connected to" is an equivalence relation
+-	Relexive: p is connected to p
+-	Symmetric: if p is connected to q, then q is connected to p
+-	Transitive: if p is connected to q ad q is connected to r, the p is connected to r
+
+connected components: max set of objects that are mutally connected 

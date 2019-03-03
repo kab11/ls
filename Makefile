@@ -10,14 +10,6 @@
 #                                                                              #
 # **************************************************************************** #
 
-# .c --> preprocessor (-E) : handles the #includes, #define, and strips out comments
-# compiler (-S) : translates C to assembly
-# .s --> assembler (-c) : translates assembly to object file 
-# .o --> linker : brings together object files to produce and executable 
-# executable 
-
-# gcc .o files -o executable_name -l linked_libraries 
-
 NAME	=	ft_ls
 
 CC		=	gcc
@@ -29,7 +21,7 @@ SRC		=	main.c \
 			print_ls.c \
 			format_and_print.c \
 			sorting_functions.c \
-			utilities.c
+			utilities.c 
 
 
 INC_FT	=	-I libft

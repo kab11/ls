@@ -1,0 +1,6 @@
+hash function: 
+	*any function that can be used to map data of arbitrary size to data of a fixed size
+	-	values returned by a hash function are called "hash values, hash codes, digests, or hashes"
+	
+hash table:
+	* a data structures used for rapid data lookup

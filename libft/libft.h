@@ -6,7 +6,7 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 13:54:12 by kblack            #+#    #+#             */
-/*   Updated: 2018/08/28 15:29:30 by kblack           ###   ########.fr       */
+/*   Updated: 2019/02/22 13:47:34 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void				*ft_memcpy(void *cpy, const void *src, size_t n);
 void				ft_memdel(void **ap);
 void				*ft_memmove(void *dst, const void *src, size_t n);
 void				*ft_memset(void *str, int c, size_t n);
+int					ft_numlen(int num);
 void				ft_putchar(char c);
 void				ft_putchar_fd(char c, int fd);
 void				ft_putendl(char const *s);

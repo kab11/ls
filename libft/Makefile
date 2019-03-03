@@ -6,7 +6,7 @@
 #    By: kblack <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/07/18 13:56:41 by kblack            #+#    #+#              #
-#    Updated: 2018/12/10 13:19:44 by kblack           ###   ########.fr        #
+#    Updated: 2019/02/22 13:46:07 by kblack           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ SRC		=	ft_abs.c \
 				ft_memdel.c \
 				ft_memmove.c \
 				ft_memset.c \
+				ft_numlen.c \
 				ft_putchar.c \
 				ft_putchar_fd.c \
 				ft_putendl.c \
