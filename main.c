@@ -6,7 +6,7 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/02 18:07:06 by kblack            #+#    #+#             */
-/*   Updated: 2019/02/26 21:39:45 by kblack           ###   ########.fr       */
+/*   Updated: 2019/03/05 22:22:16 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,34 +25,15 @@
 **	5) if so, recursively list that directory
 */
 
-void		free_file(t_info *file)
-{
-	(file->name != NULL) ? free(file->name) : 0;
-	(file->pwd != NULL) ? free(file->pwd) : 0;
-	(file->permission != NULL) ? free(file->permission) : 0;
-	(file->sym_link != NULL) ? free(file->sym_link) : 0;
-	(file->mtime != NULL) ? free(file->mtime) : 0;
-	free(file);
-	file = NULL;
-}
+/*
+** Handles -R flag; recursively lists subdirectories
+*/
 
-void		free_all_files(t_info *files)
+void	print_recursive(char *path, t_ls *ls, int flags)
 {
-	t_info		*temp;
-
-	while (files != NULL)
-	{
-		temp = files->next;
-		free_file(files);
-		files = temp;
-	}
-}
-
-void print_recursive(char *path, t_ls *ls, int flags)
-{
-	t_info *cur;
-	char *file_path;
-	char *tmp;
+	t_info	*cur;
+	char	*file_path;
+	char	*tmp;
 
 	cur = ls->dir_info;
 	while (cur != NULL)
@@ -70,30 +51,35 @@ void print_recursive(char *path, t_ls *ls, int flags)
 			ft_putstr(file_path);
 			ft_putstr(":\n");
 			main_handler(file_path, flags);
+			free(file_path);
 		}
 		cur = cur->next;
 	}
 }
 
-void main_handler(char *path, int flags)
+/*
+** main_handle takes care of getting file information, sorting time,
+** printing, recursion, and freeing memory at the end of the program
+*/
+
+void	main_handler(char *path, int flags)
 {
-	t_ls ls;
+	t_ls	ls;
 
 	ft_bzero(&ls, sizeof(ls));
 	get_file_info(path, &ls);
-	if (flags & OPT_t)
-		sort_by_time(&ls.dir_info);
+	if (flags & OPT_t || flags & OPT_u)
+		sort_by_time(&ls.dir_info, flags);
 	ls_print_and_format(&ls, flags);
-
 	if (flags & OPT_R)
 		print_recursive(path, &ls, flags);
 	free_all_files(ls.dir_info);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	int flags;
-	int i;
+	int	flags;
+	int	i;
 
 	i = 1;
 	flags = 0;

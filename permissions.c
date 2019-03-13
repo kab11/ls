@@ -12,10 +12,15 @@
 
 #include "ft_ls.h"
 
-void		get_file_type(struct stat file, char *str)
+/*
+** this creates a string of the file type and permissions for each file/directory
+** in the directory stream and returns the string 
+*/
+
+void	get_file_type(struct stat file, char *str)
 {
-	int		i;
-	int		x;
+	int	i;
+	int	x;
 
 	i = 0;
 	x = file.st_mode & S_IFMT;
@@ -28,10 +33,10 @@ void		get_file_type(struct stat file, char *str)
 	S_ISSOCK(x) ? str[i] = 's' : 0;
 }
 
-char		*get_permissions(struct stat file)
+char	*get_permissions(struct stat file)
 {
 	char	*str;
-	int		i;
+	int	i;
 
 	i = 10;
 	str = ft_strnew(i);

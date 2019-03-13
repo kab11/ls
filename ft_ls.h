@@ -6,7 +6,7 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/02 12:00:03 by kblack            #+#    #+#             */
-/*   Updated: 2019/02/26 22:05:22 by kblack           ###   ########.fr       */
+/*   Updated: 2019/03/05 22:56:21 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,26 @@
 # define BIT_OFF(x, y) x &= (~y)
 # define BIT_FLIP(x, y) x ^= y
 
+# define ANSI_COLOR_RED		"\x1b[31m"
+# define ANSI_COLOR_MAGENTA	"\x1b[35m"
+# define BOLDCYAN			"\033[1m\033[36m"
+# define ANSI_COLOR_RESET	"\x1b[0m"
+
+# define FLAG "Radglrtu"
+
+
 enum				e_flag
 {
+
 	OPT_a = 1 << 0,
 	OPT_l = 1 << 1,
 	OPT_R = 1 << 2,
 	OPT_r = 1 << 3,
 	OPT_t = 1 << 4,
-	OPT_g = 1 << 5
+	OPT_g = 1 << 5,
+	OPT_u = 1 << 6,
+	OPT_d = 1 << 7,
+	ls_DIR = 1 << 8
 };
 
 typedef struct		s_info
@@ -52,7 +64,9 @@ typedef struct		s_info
 	char			*gp_name;
 	int				bytes;
 	char			*mtime;
-	time_t				int_mtime;
+	time_t			int_mtime;
+	char			*atime;
+	time_t			int_atime;
 	char			*name;
 	char			*sym_link;
 	int				total_bytes;
@@ -64,7 +78,6 @@ typedef struct		s_ls
 {
 	int				flags;
 	int				total;
-	int				is_a_file;
 	struct stat		stat;
 
 	double			gt_link;
@@ -74,31 +87,65 @@ typedef struct		s_ls
 	struct s_info	*dir_info;
 }					t_ls;
 
-int					main(int argc, char **argv);
-void				main_handler(char *path, int flags);
+/*
+** FILE_UTILITIES.C
+*/
+int		check_dir(char *name);
+int		check_file(char *name);
+void	check_color(t_info *file);
+void	print_long(t_info *node, t_ls *ls, int flags);
 
-void parse_flags(char **av, int flags);
-int flag_handler(char *av);
-void print_file_dir_error (char *av);
+/*
+** FLAG_UTILITIES.C
+*/
+int		flag_handler(char *av);
 
-void				get_file_info(char *path, t_ls *ls);
-char				*get_permissions(struct stat file);
-void sort_by_time(t_info **list);
-t_info *alpha_insert_sort(t_info *node, t_info *list);
+/*
+** FORMAT_AND_PRINT.C
+*/
+void	ls_print_and_format(t_ls *ls, int flags);
 
-void				ls_print_and_format(t_ls *ls, int flags);
+/*
+** FREE_MEMORY.C
+*/
+void	free_all_files(t_info *files);
 
-t_info				*new_node();
-void				link_padding(int num, t_ls *ls);
-void				byte_padding(int num, t_ls *ls);
-void				get_format(t_ls *ls);
-void				get_total_bytes(t_ls *ls, int flags);
+/*
+** GET_FILE_INFO.C
+*/
+void	get_file_info(char *path, t_ls *ls);
+void	save_file_info(t_info *node, t_ls *ls);
 
-void				free_all_files(t_info *files);
+/*
+** HANDLE_FLAGS.C
+*/
+void	parse_flags(char **av, int flags);
 
-void				save_file_info(t_info *node, t_ls *ls);
+/*
+** MAIN.C
+*/
+int		main(int argc, char **argv);
+void	main_handler(char *path, int flags);
 
-int					check_dir(char *name);
-int					check_file(char *name);
+/*
+** PERMISSIONS.C
+*/
+char	*get_permissions(struct stat file);
+
+/*
+** SORTING_FUNCTIONS.C
+*/
+void	sort_by_time(t_info **list, int flags);
+t_info	*alpha_insert_sort(t_info *node, t_info *list);
+t_info	*sort_and_merge(t_info *a, t_info *b, int flags);
+
+/*
+** UTILITIES.C
+*/
+t_info	*new_node();
+void	link_padding(int num, t_ls *ls);
+void	byte_padding(int num, t_ls *ls);
+void	get_format(t_ls *ls);
+void	get_total_bytes(t_ls *ls, int flags);
 
 #endif

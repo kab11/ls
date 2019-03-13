@@ -12,7 +12,11 @@
 
 #include "ft_ls.h"
 
-t_info		*new_node(void)
+/*
+** various hepler functions
+*/
+
+t_info	*new_node(void)
 {
 	t_info	*new_node;
 
@@ -21,20 +25,24 @@ t_info		*new_node(void)
 	return (new_node);
 }
 
-void		link_padding(int num, t_ls *ls)
+/*
+** these are format functions for the -l specifier 
+*/
+
+void	link_padding(int num, t_ls *ls)
 {
 	while (num++ < ls->link_len)
 		ft_putchar(' ');
 }
 
-void		byte_padding(int num, t_ls *ls)
+void	byte_padding(int num, t_ls *ls)
 {
 	num == 0 ? num++ : 0;
 	while (num++ < ls->byte_len)
 		ft_putchar(' ');
 }
 
-void		get_format(t_ls *ls)
+void	get_format(t_ls *ls)
 {
 	t_info	*file;
 
@@ -51,17 +59,21 @@ void		get_format(t_ls *ls)
 	ls->byte_len = ft_numlen(ls->gt_byte);
 }
 
-void		get_total_bytes(t_ls *ls, int flags)
+/*
+** gets the total bytes by 512-byte blocks 
+*/
+
+void	get_total_bytes(t_ls *ls, int flags)
 {
 	t_info	*node;
-	int		tmp;
+	int	tmp;
 
 	tmp = 0;
 	node = ls->dir_info;
 	while (node)
 	{
 		if (!(flags & OPT_a) && (ft_strncmp(node->name, ".", 1) == 0))
-			node = node->next;
+			;
 		else
 			tmp += node->total_bytes;
 		node = node->next;

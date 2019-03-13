@@ -6,7 +6,7 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/22 01:14:59 by kblack            #+#    #+#             */
-/*   Updated: 2019/02/26 21:53:26 by kblack           ###   ########.fr       */
+/*   Updated: 2019/03/05 22:37:54 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,10 @@
 **	Merge sort function used when '-t' (sort by time modified) option it used
 */
 
-
-void split_list(t_info *source, t_info **front, t_info **back)
+void	split_list(t_info *source, t_info **front, t_info **back)
 {
-	t_info *fast;
-	t_info *slow;
+	t_info	*fast;
+	t_info	*slow;
 
 	if (source == NULL || source->next == NULL)
 	{
@@ -46,104 +45,80 @@ void split_list(t_info *source, t_info **front, t_info **back)
 	}
 }
 
-t_info *sort_and_merge(t_info *a, t_info *b)
+t_info	*handle_time(t_info **ab, int x, t_info *result, int flags)
 {
-	t_info *result;
+	t_info	*a;
+	t_info	*b;
 
+	a = ab[0];
+	b = ab[1];
+	if (x == 0)
+	{
+		result = a;
+		result->next = sort_and_merge(a->next, b, flags);
+	}
+	else
+	{
+		result = b;
+		result->next = sort_and_merge(a, b->next, flags);
+	}
+	return (result);
+}
+
+t_info	*sort_and_merge(t_info *a, t_info *b, int flags)
+{
+	t_info	*result;
+	t_info	*ab[2];
+
+	ab[0] = a;
+	ab[1] = b;
 	result = NULL;
 	if (a == NULL)
 		return (b);
 	else if (b == NULL)
 		return (a);
-	if (a->int_mtime >= b->int_mtime)
+	if (flags & OPT_u && flags & OPT_t)
+		result = handle_time(ab, ((a->int_atime >= b->int_atime) ? 0 : 1), result, flags);
+	else if (flags & OPT_t)
+		result = handle_time(ab, ((a->int_mtime >= b->int_mtime) ? 0 : 1), result, flags);
+	else if (flags & OPT_u)
 	{
 		result = a;
-		result->next = sort_and_merge(a->next, b);
-	}
-	else
-	{
-		result = b;
-		result->next = sort_and_merge(a, b->next);
+		result->next = sort_and_merge(a->next, b, flags);
 	}
 	return (result);
 }
 
-void sort_by_time(t_info **headRef)
+void	sort_by_time(t_info **headref, int flags)
 {
-	t_info *head = *headRef;
-	t_info *a;
-	t_info *b;
+	t_info	*head;
+	t_info	*a;
+	t_info	*b;
 
+	head = *headref;
 	if ((head == NULL) || (head->next == NULL))
-		return;
+		return ;
 	split_list(head, &a, &b);
-
-	sort_by_time(&a);
-	sort_by_time(&b);
-	*headRef = sort_and_merge(a, b);
+	sort_by_time(&a, flags);
+	sort_by_time(&b, flags);
+	*headref = sort_and_merge(a, b, flags);
 }
 
-// void swap(t_info **prev, t_info **n1, t_info **n2, t_info **head)
-// {
-// 	if (*prev != NULL)
-// 	{
-// 		(*prev)->next = (*n2);
-// 		(*n1)->next = (*n2)->next;
-// 		(*n2)->next = (*n1);
-// 	}
-// 	else
-// 	{
-// 		(*n1)->next = (*n2)->next;
-// 		(*n2)->next = (*n1);
-// 		(*n1) = (*n2);
-// 		*head = *n2;
-// 	}
-// }
+/*
+** insert-sort that takes each new node and places it into a linked list
+** in lexicographical order 
+*/
 
-// void sort_by_time(t_info **list)
-// {
-// 	int i;
-// 	t_info *cur;
-// 	t_info *trail;
-// 	t_info *next;
-
-// 	i = 1;
-// 	cur = *list;
-// 	next = cur->next;
-// 	trail = NULL;
-// 	if (list == NULL)
-// 		return ; 
-// 	while (cur->next != NULL)
-// 	{
-// 		if (cur->int_mtime > cur->next->int_mtime)
-// 		{
-// 			swap(&trail, &cur, &next, list);
-// 			cur = *list;
-// 			next = cur->next;
-// 			trail = NULL;
-// 			continue;
-// 		}
-// 		trail =cur;
-// 		cur = cur->next;
-// 		if (cur != NULL)
-// 			next = cur->next;
-// 	}
-// }
-
-
-t_info *alpha_insert_sort(t_info *node, t_info *list)
+t_info	*alpha_insert_sort(t_info *node, t_info *list)
 {
-	t_info *cur;
-	t_info *trail;
+	t_info	*cur;
+	t_info	*trail;
 
 	cur = list;
 	if (list == NULL)
-		list = node; 
-	else if (ft_strcmp(node->name, list->name) <= 0)
-	{
-		node->next = list;
 		list = node;
-	}
+	else if (ft_strcmp(node->name, list->name) <= 0 && (node->next = list))
+		list = node;
 	else
 	{
 		while (cur->next != NULL && ft_strcmp(node->name, cur->name) > 0)

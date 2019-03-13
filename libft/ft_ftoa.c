@@ -6,24 +6,24 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/30 21:54:48 by kblack            #+#    #+#             */
-/*   Updated: 2019/01/30 21:55:01 by kblack           ###   ########.fr       */
+/*   Updated: 2019/03/05 23:15:26 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_ftoa(long double num)
+char		*ft_ftoa(long double num)
 {
-	char *str;
-	int i;
-	int sign;
-	long tmp;
+	char	*str;
+	int		i;
+	int		sign;
+	long	tmp;
 
 	sign = (num < 0) ? -1 : 1;
 	i = (num < 0) ? 1 : 0;
 	num *= sign;
 	tmp = (long)num;
-	while (tmp > 0 && i++ >= 0) /* length of integer */
+	while (tmp > 0 && i++ >= 0)
 		tmp /= 10;
 	while (num - (long)num != 0 && i++ >= 0)
 		num *= 10;
@@ -35,8 +35,8 @@ char	*ft_ftoa(long double num)
 		if (sign == -1 && i == 1)
 		{
 			str[0] = '-';
-			break;
+			break ;
 		}
 	}
-	return(str);
+	return (str);
 }

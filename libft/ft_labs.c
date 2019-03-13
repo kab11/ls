@@ -6,13 +6,13 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/30 10:48:45 by kblack            #+#    #+#             */
-/*   Updated: 2019/01/30 10:49:04 by kblack           ###   ########.fr       */
+/*   Updated: 2019/03/05 23:09:02 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-long ft_labs(long i)
+long	ft_labs(long i)
 {
 	if (i < 0)
 		i *= -1;

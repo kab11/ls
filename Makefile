@@ -15,14 +15,16 @@ NAME	=	ft_ls
 CC		=	gcc
 CFLAGS	=	-Wall -Wextra -Werror
 
-SRC		=	main.c \
-			handle_flags.c \
-			permissions.c \
-			print_ls.c \
+SRC		=	file_utilities.c \
+			flag_utilities.c \
 			format_and_print.c \
+			free_memory.c \
+			get_info.c \
+			handle_flags.c \
+			main.c \
+			permissions.c \
 			sorting_functions.c \
-			utilities.c 
-
+			utilities.c
 
 INC_FT	=	-I libft
 LINK_FT	=	-L libft -l ft

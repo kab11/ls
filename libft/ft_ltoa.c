@@ -6,17 +6,17 @@
 /*   By: kblack <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/28 20:34:37 by kblack            #+#    #+#             */
-/*   Updated: 2019/01/28 20:35:03 by kblack           ###   ########.fr       */
+/*   Updated: 2019/03/05 23:12:23 by kblack           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_ltoa(intmax_t num)
+char			*ft_ltoa(intmax_t num)
 {
-	intmax_t tmp;
-	int i;
-	char *str;
+	intmax_t	tmp;
+	int			i;
+	char		*str;
 
 	tmp = ft_abs(num);
 	i = 1;
