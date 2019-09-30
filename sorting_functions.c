@@ -77,15 +77,8 @@ t_info	*sort_and_merge(t_info *a, t_info *b, int flags)
 		return (b);
 	else if (b == NULL)
 		return (a);
-	if (flags & OPT_u && flags & OPT_t)
-		result = handle_time(ab, ((a->int_atime >= b->int_atime) ? 0 : 1), result, flags);
-	else if (flags & OPT_t)
+	if (flags & OPT_t)
 		result = handle_time(ab, ((a->int_mtime >= b->int_mtime) ? 0 : 1), result, flags);
-	else if (flags & OPT_u)
-	{
-		result = a;
-		result->next = sort_and_merge(a->next, b, flags);
-	}
 	return (result);
 }
 

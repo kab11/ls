@@ -15,26 +15,26 @@
 #include "ft_ls.h"
 
 /*
-** listing reverse ascii (-r)
+** listing reverse ascii (-r); print linked list content from right to left
 */
 
-void	poopy_back(t_info **list, t_ls *ls, int flags)
+void	print_reverse(t_info **list, t_ls *ls, int flags)
 {
 	t_info	*foo;
 
 	foo = *list;
 	if (foo == NULL)
 		return ;
-	poopy_back(&foo->next, ls, flags);
+	print_reverse(&foo->next, ls, flags);
 	if ((flags & OPT_a) || foo->name[0] != '.')
 	{
 		if (flags & OPT_l)
-			print_long(foo, ls, flags);
+			print_long(foo, ls);
 		else
 		{
 			if (foo->permission[0] == 'd' ||
-				foo->permission[0] == 'l' || foo->permission[3] == 'x')
-				check_color(foo);
+				foo->permission[0] == 'l' || foo->permission[3] == 'x' || foo->permission[9] == 't')
+					check_color(foo);
 			else
 				ft_putstr(foo->name);
 			ft_putchar('\n');
@@ -43,10 +43,10 @@ void	poopy_back(t_info **list, t_ls *ls, int flags)
 }
 
 /*
-** listing by ascii order
+** listing by ascii order; recursively print linked list content from left to right
 */
 
-void	not_poopy_back(t_info **list, t_ls *ls, int flags)
+void	print_standard(t_info **list, t_ls *ls, int flags)
 {
 	t_info	*foo;
 
@@ -56,53 +56,26 @@ void	not_poopy_back(t_info **list, t_ls *ls, int flags)
 	if ((flags & OPT_a) || foo->name[0] != '.')
 	{
 		if (flags & OPT_l)
-			print_long(foo, ls, flags);
+			print_long(foo, ls);
 		else
 		{
 			if (foo->permission[0] == 'd' ||
-				foo->permission[0] == 'l' || foo->permission[3] == 'x')
-				check_color(foo);
+				foo->permission[0] == 'l' || foo->permission[3] == 'x' || foo->permission[9] == 't')
+					check_color(foo);
 			else
 				ft_putstr(foo->name);
 			ft_putchar('\n');
 		}
 	}
-	not_poopy_back(&foo->next, ls, flags);
+	print_standard(&foo->next, ls, flags);
 }
 
 void	print(t_info **cur, t_ls *ls, int flags)
 {
 	if ((flags & OPT_r) == 8)
-		poopy_back(cur, ls, flags);
+		print_reverse(cur, ls, flags);
 	else
-		not_poopy_back(cur, ls, flags);
-}
-
-/*
-** handle option -d 
-*/
-
-void	print_flag_d(t_info **cur, t_ls *ls, int flags)
-{
-	t_info	*foo;
-
-	foo = *cur;
-	if (foo == NULL)
-		return ;
-	while (foo != NULL)
-	{
-		if (ft_strcmp(foo->name, ".") == 0)
-		{
-			if (flags & OPT_l)
-				print_long(foo, ls, flags);
-			else
-			{
-				check_color(foo);
-				ft_putchar('\n');
-			}
-		}
-		foo = foo->next;
-	}
+		print_standard(cur, ls, flags);
 }
 
 void	ls_print_and_format(t_ls *ls, int flags)
@@ -111,12 +84,7 @@ void	ls_print_and_format(t_ls *ls, int flags)
 
 	cur = ls->dir_info;
 	get_format(ls);
-	if (flags & OPT_d)
-	{
-		print_flag_d(&cur, ls, flags);
-		return ;
-	}
-	else if (flags & OPT_l && (flags & ls_DIR) != 0)
+	if (flags & OPT_l && (flags & ls_DIR) != 0)
 	{
 		get_total_bytes(ls, flags);
 		if (ls->total > 0)

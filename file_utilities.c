@@ -43,55 +43,61 @@ int	check_dir(char *name)
 ** directory and prints the name with the corresponding color 
 */
 
+void print_symlink(char *str)
+{
+	int i;
+
+	i = -1;
+	while(str[++i] != '>')
+	{
+		ft_putstr(ANSI_COLOR_MAGENTA);
+		ft_putchar(str[i]);
+	}
+	ft_putchar(str[i]);
+	ft_putstr(ANSI_COLOR_RESET);
+	while (str[++i])
+		ft_putchar(str[i]);
+}
+
 void	check_color(t_info *file)
 {
 	if (file->permission[0] == 'l')
-	{
-		ft_putstr(ANSI_COLOR_MAGENTA);
-		ft_putstr(file->sym_link);
-		ft_putstr(ANSI_COLOR_RESET);
-	}
+		print_symlink(file->sym_link);
 	else if (file->permission[0] == 'd')
 	{
-		ft_putstr(BOLDCYAN);
+		(file->permission[9] == 't') ? ft_putstr(GREEN_HIGHLIGHT) : ft_putstr(BOLDCYAN);
 		ft_putstr(file->name);
-		ft_putstr(ANSI_COLOR_RESET);
 	}
-	else if (file->permission[3] == 'x')
+	else if (file->permission[9] == 't' || file->permission[3] == 'x')
 	{
-		ft_putstr(ANSI_COLOR_RED);
+		file->permission[9] == 't' ? ft_putstr(GREEN_HIGHLIGHT) : ft_putstr(ANSI_COLOR_RED);
 		ft_putstr(file->name);
-		ft_putstr(ANSI_COLOR_RESET);
 	}
+	ft_putstr(ANSI_COLOR_RESET);
 }
 
 /*
 ** this is where the long form; when -l is specified, is printed
 */
 
-void	print_long(t_info *node, t_ls *ls, int flags)
+void	print_long(t_info *node, t_ls *ls)
 {
 	ft_putstr(node->permission);
 	ft_putchar(' ');
 	link_padding(ft_numlen(node->links), ls);
 	ft_putnbr(node->links);
 	ft_putchar(' ');
-	if (flags & OPT_g)
-		ft_putstr(node->gp_name);
-	else
-	{
-		ft_putstr(node->o_name);
-		ft_putstr("  ");
-		ft_putstr(node->gp_name);
-	}
+	ft_putstr(node->o_name);
+	ft_putstr("  ");
+	ft_putstr(node->gp_name);
 	ft_putstr("  ");
 	byte_padding(ft_numlen(node->bytes), ls);
 	ft_putnbr(node->bytes);
 	ft_putchar(' ');
-	(flags & OPT_u) ? ft_putstr(node->atime) : ft_putstr(node->mtime);
+	ft_putstr(node->mtime);
 	ft_putchar(' ');
 	if (node->permission[0] == 'd' ||
-		node->permission[0] == 'l' || node->permission[3] == 'x')
+		node->permission[0] == 'l' || node->permission[3] == 'x' || node->permission[9] == 't')
 		check_color(node);
 	else
 		ft_putstr(node->name);

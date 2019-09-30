@@ -13,24 +13,32 @@
 #include "ft_ls.h"
 
 /*
-** these functions hande command line files and directories that the user writes 
+** these functions handle command line files and directories that the user writes 
 */
 
-void	print_file_error(char **av)
+/*
+** check_file_and_directory_exist checks to see of the file/directory specificed by the
+** user exists and if not prints and error
+*/
+
+void	check_file_and_directory_exist(char **av)
 {
 	int	i;
 
-	i = 0;
-	while (av[i] != NULL)
+	i = -1;
+	while (av[++i] != NULL)
 	{
 		if (check_file(av[i]) != 0 && check_dir(av[i]) != 0)
 		{
 			ft_putstr("ls: ");
 			perror(av[i]);
 		}
-		i++;
 	}
 }
+
+/*
+** print_
+*/
 
 int	print_file_info(char **av, t_ls *fs, int flags)
 {
@@ -38,8 +46,8 @@ int	print_file_info(char **av, t_ls *fs, int flags)
 	char	*path;
 	int	i;
 
-	i = 0;
-	while (av[i] != NULL)
+	i = -1;
+	while (av[++i] != NULL)
 	{
 		if (check_file(av[i]) == 0 && check_dir(av[i]) != 0)
 		{
@@ -50,7 +58,6 @@ int	print_file_info(char **av, t_ls *fs, int flags)
 			save_file_info(node, fs);
 			fs->dir_info = alpha_insert_sort(node, fs->dir_info);
 		}
-		i++;
 	}
 	ls_print_and_format(fs, flags);
 	return (flags);
@@ -60,8 +67,8 @@ void	print_dir_info(char **av, int flags)
 {
 	int	i;
 
-	i = 0;
-	while (av[i] != NULL)
+	i = -1;
+	while (av[++i] != NULL)
 	{
 		BIT_ON(flags, ls_DIR);
 		if (check_dir(av[i]) == 0)
@@ -69,9 +76,8 @@ void	print_dir_info(char **av, int flags)
 			ft_putchar('\n');
 			ft_putstr(av[i]);
 			ft_putstr(":\n");
-			main_handler(av[i], flags);
+			ft_ls(av[i], flags);
 		}
-		i++;
 	}
 }
 
@@ -81,7 +87,7 @@ void	parse_flags(char **av, int flags)
 	int	new_flags;
 
 	ft_bzero(&fs, sizeof(fs));
-	print_file_error(av);
+	check_file_and_directory_exist(av);
 	new_flags = print_file_info(av, &fs, flags);
 	print_dir_info(av, new_flags);
 	free_all_files(fs.dir_info);

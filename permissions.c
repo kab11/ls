@@ -33,6 +33,12 @@ void	get_file_type(struct stat file, char *str)
 	S_ISSOCK(x) ? str[i] = 's' : 0;
 }
 
+/*
+** sticky bit handling: aka "restriction deletion bit": when enables it makes a 
+** directory such that users can only rename of delete files/directories 
+** within it that they are owners of. Commonly found in world-writeable directories like /tmp
+*/
+
 char	*get_permissions(struct stat file)
 {
 	char	*str;
@@ -50,7 +56,10 @@ char	*get_permissions(struct stat file)
 	str[i++] = S_IXGRP & file.st_mode ? 'x' : '-';
 	str[i++] = S_IROTH & file.st_mode ? 'r' : '-';
 	str[i++] = S_IWOTH & file.st_mode ? 'w' : '-';
-	str[i++] = S_IXOTH & file.st_mode ? 'x' : '-';
+	if (S_ISVTX & file.st_mode || S_IXOTH & file.st_mode)
+		str[i++] = S_ISVTX & file.st_mode ? 't' : 'x';
+	else
+		str[i++] = '-';
 	str[i] = '\0';
 	return (str);
 }

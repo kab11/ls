@@ -38,8 +38,9 @@
 # define ANSI_COLOR_MAGENTA	"\x1b[35m"
 # define BOLDCYAN			"\033[1m\033[36m"
 # define ANSI_COLOR_RESET	"\x1b[0m"
+# define GREEN_HIGHLIGHT	"\x1b[30m\x1b[42m"
 
-# define FLAG "Radglrtu"
+# define FLAG "Ralrt"
 
 
 enum				e_flag
@@ -50,9 +51,6 @@ enum				e_flag
 	OPT_R = 1 << 2,
 	OPT_r = 1 << 3,
 	OPT_t = 1 << 4,
-	OPT_g = 1 << 5,
-	OPT_u = 1 << 6,
-	OPT_d = 1 << 7,
 	ls_DIR = 1 << 8
 };
 
@@ -88,12 +86,18 @@ typedef struct		s_ls
 }					t_ls;
 
 /*
+** MAIN.C
+*/
+int		main(int argc, char **argv);
+void	ft_ls(char *path, int flags);
+
+/*
 ** FILE_UTILITIES.C
 */
 int		check_dir(char *name);
 int		check_file(char *name);
 void	check_color(t_info *file);
-void	print_long(t_info *node, t_ls *ls, int flags);
+void	print_long(t_info *node, t_ls *ls);
 
 /*
 ** FLAG_UTILITIES.C
@@ -120,12 +124,6 @@ void	save_file_info(t_info *node, t_ls *ls);
 ** HANDLE_FLAGS.C
 */
 void	parse_flags(char **av, int flags);
-
-/*
-** MAIN.C
-*/
-int		main(int argc, char **argv);
-void	main_handler(char *path, int flags);
 
 /*
 ** PERMISSIONS.C

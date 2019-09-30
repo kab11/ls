@@ -13,11 +13,11 @@
 #include "ft_ls.h"
 
 /*
-** flag_handler uses bit masking to signal what flags the user is specifying
-** this value is saved in "flags" and passed throughout the program
+** flag_option_error prints an error message when the user inputs an invalid
+** flag/option
 */
 
-void	flag_error(char av)
+void	flag_option_error(char av)
 {
 	ft_putstr("ls: illegal option -- ");
 	ft_putchar(av);
@@ -29,30 +29,27 @@ void	flag_error(char av)
 	exit(-1);
 }
 
+/*
+** flag_handler uses bit masking to signal what flags the user is specifying
+** this value is saved in "flags" and passed throughout the program
+*/
+
 int	flag_handler(char *av)
 {
 	int	i;
 	int	flags;
 
-	i = 1;
+	i = 0;
 	flags = 0;
-	while (av[i])
+	while (av[++i])
 	{
 		if (!(ft_strchr(FLAG, av[i])))
-			flag_error(av[i]);
+			flag_option_error(av[i]);
 		av[i] == 'a' ? BIT_ON(flags, OPT_a) : 0;
 		av[i] == 'l' ? BIT_ON(flags, OPT_l) : 0;
 		av[i] == 'R' ? BIT_ON(flags, OPT_R) : 0;
 		av[i] == 'r' ? BIT_ON(flags, OPT_r) : 0;
 		av[i] == 't' ? BIT_ON(flags, OPT_t) : 0;
-		av[i] == 'g' ? BIT_ON(flags, OPT_g) : 0;
-		if (flags & OPT_g)
-			BIT_ON(flags, OPT_l);
-		av[i] == 'u' ? BIT_ON(flags, OPT_u) : 0;
-		av[i] == 'd' ? BIT_ON(flags, OPT_d) : 0;
-		if (flags & OPT_d)
-			BIT_OFF(flags, OPT_R);
-		i++;
 	}
 	return (flags);
 }

@@ -12,7 +12,7 @@
 
 #include "ft_ls.h"
 
-/* 
+/*
 ** these 2 programs free any memory that was allocated thoughout the program to
 ** handle any possible leaks 
 */

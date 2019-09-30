@@ -16,7 +16,7 @@ CC		=	gcc
 CFLAGS	=	-Wall -Wextra -Werror
 
 SRC		=	file_utilities.c \
-			flag_utilities.c \
+			get_flag_options.c \
 			format_and_print.c \
 			free_memory.c \
 			get_info.c \

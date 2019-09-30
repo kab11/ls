@@ -31,7 +31,7 @@ t_info	*new_node(void)
 
 void	link_padding(int num, t_ls *ls)
 {
-	while (num++ < ls->link_len)
+	while (num++ <= ls->link_len)
 		ft_putchar(' ');
 }
 

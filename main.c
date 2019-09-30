@@ -16,8 +16,8 @@
 ** OBJECTIVE: recreate ls; ls is used to list the contents of directories
 **
 **	FLAGS:	-l: long listing format	-a: include entries which start with "."
-**			-R: recurse				-t: sort by mtime
-**			-r: reverse sort order
+**			-R: recurse				-t: sort by mtime (time last modified)
+**			-r: reverse sort order	-u: sort by atime (time last accesssed)
 **	1) get all files in the directory
 **	2) print the "ls" output
 **	3) go throgh all the files in the directory
@@ -50,7 +50,7 @@ void	print_recursive(char *path, t_ls *ls, int flags)
 			ft_putchar('\n');
 			ft_putstr(file_path);
 			ft_putstr(":\n");
-			main_handler(file_path, flags);
+			ft_ls(file_path, flags);
 			free(file_path);
 		}
 		cur = cur->next;
@@ -58,17 +58,17 @@ void	print_recursive(char *path, t_ls *ls, int flags)
 }
 
 /*
-** main_handle takes care of getting file information, sorting time,
+** ft_ls takes care of getting file information, sorting time,
 ** printing, recursion, and freeing memory at the end of the program
 */
 
-void	main_handler(char *path, int flags)
+void	ft_ls(char *path, int flags)
 {
 	t_ls	ls;
 
 	ft_bzero(&ls, sizeof(ls));
 	get_file_info(path, &ls);
-	if (flags & OPT_t || flags & OPT_u)
+	if (flags & OPT_t)
 		sort_by_time(&ls.dir_info, flags);
 	ls_print_and_format(&ls, flags);
 	if (flags & OPT_R)
@@ -76,26 +76,25 @@ void	main_handler(char *path, int flags)
 	free_all_files(ls.dir_info);
 }
 
+/*
+** Reads from stdin. Determines whether or not the user has selected
+** options and dircts to the appropriate next step. 
+*/
+
 int	main(int argc, char **argv)
 {
 	int	flags;
 	int	i;
 
-	i = 1;
+	i = 0;
 	flags = 0;
 	if (argc == 1)
-		main_handler(".", flags);
+		ft_ls(".", flags);
 	else if (argc > 1)
 	{
-		while (i < argc && argv[i][0] == '-')
-		{
+		while (++i < argc && argv[i][0] == '-')
 			flags |= flag_handler(argv[i]);
-			i++;
-		}
-		if (i == argc)
-			main_handler(".", flags);
-		else
-			parse_flags(argv + i, flags);
+		(i == argc) ? ft_ls(".", flags) : parse_flags(argv + i, flags);
 	}
 	return (0);
 }
