@@ -41,6 +41,9 @@ int	check_dir(char *name)
 /*
 ** check_color checks if the file passed is a symolic link, executable file, or
 ** a directory and prints the name with the corresponding color 
+**
+** To create a symlink:
+**	[ln -s <file make symlink> <symlink name>]
 */
 
 void print_symlink(char *str)
