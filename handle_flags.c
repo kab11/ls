@@ -37,10 +37,15 @@ void	check_file_and_directory_exist(char **av)
 }
 
 /*
-** print_
+** meat_and_potatoes: creates the path for the directory stream
+**
+**		Calls functions that:
+** 			1. populate the struture with file/directory info
+** 			2. sorts each node using insert sort
+** 			3. format printing based off of the option(s) specified
 */
 
-int	print_file_info(char **av, t_ls *fs, int flags)
+int	meat_and_potatoes(char **av, t_ls *fs, int flags)
 {
 	t_info	*node;
 	char	*path;
@@ -63,6 +68,10 @@ int	print_file_info(char **av, t_ls *fs, int flags)
 	return (flags);
 }
 
+/*
+** Prints directory name and then 
+*/
+
 void	print_dir_info(char **av, int flags)
 {
 	int	i;
@@ -76,19 +85,23 @@ void	print_dir_info(char **av, int flags)
 			ft_putchar('\n');
 			ft_putstr(av[i]);
 			ft_putstr(":\n");
-			ft_ls(av[i], flags);
+			execute_ls(av[i], flags);
 		}
 	}
 }
 
-void	parse_flags(char **av, int flags)
+/* 
+** Handles when the user specifies a file or driectory 
+*/
+
+void	handle_file_dir(char **av, int flags)
 {
 	t_ls	fs;
 	int	new_flags;
 
 	ft_bzero(&fs, sizeof(fs));
 	check_file_and_directory_exist(av);
-	new_flags = print_file_info(av, &fs, flags);
+	new_flags = meat_and_potatoes(av, &fs, flags);
 	print_dir_info(av, new_flags);
 	free_all_files(fs.dir_info);
 }

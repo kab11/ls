@@ -13,7 +13,7 @@
 #include "ft_ls.h"
 
 /*
-** various hepler functions
+** Creates a new node of t_info structure
 */
 
 t_info	*new_node(void)

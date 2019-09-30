@@ -89,7 +89,7 @@ typedef struct		s_ls
 ** MAIN.C
 */
 int		main(int argc, char **argv);
-void	ft_ls(char *path, int flags);
+void	execute_ls(char *path, int flags);
 
 /*
 ** FILE_UTILITIES.C
@@ -123,7 +123,7 @@ void	save_file_info(t_info *node, t_ls *ls);
 /*
 ** HANDLE_FLAGS.C
 */
-void	parse_flags(char **av, int flags);
+void	handle_file_dir(char **av, int flags);
 
 /*
 ** PERMISSIONS.C

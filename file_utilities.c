@@ -39,8 +39,8 @@ int	check_dir(char *name)
 }
 
 /*
-** check_color checks if the file passed is a symolic link, executable file, or a
-** directory and prints the name with the corresponding color 
+** check_color checks if the file passed is a symolic link, executable file, or
+** a directory and prints the name with the corresponding color 
 */
 
 void print_symlink(char *str)
@@ -65,12 +65,14 @@ void	check_color(t_info *file)
 		print_symlink(file->sym_link);
 	else if (file->permission[0] == 'd')
 	{
-		(file->permission[9] == 't') ? ft_putstr(GREEN_HIGHLIGHT) : ft_putstr(BOLDCYAN);
+		(file->permission[9] == 't') ? ft_putstr(GREEN_HIGHLIGHT)
+			: ft_putstr(BOLDCYAN);
 		ft_putstr(file->name);
 	}
 	else if (file->permission[9] == 't' || file->permission[3] == 'x')
 	{
-		file->permission[9] == 't' ? ft_putstr(GREEN_HIGHLIGHT) : ft_putstr(ANSI_COLOR_RED);
+		file->permission[9] == 't' ? ft_putstr(GREEN_HIGHLIGHT)
+			: ft_putstr(ANSI_COLOR_RED);
 		ft_putstr(file->name);
 	}
 	ft_putstr(ANSI_COLOR_RESET);
@@ -97,7 +99,8 @@ void	print_long(t_info *node, t_ls *ls)
 	ft_putstr(node->mtime);
 	ft_putchar(' ');
 	if (node->permission[0] == 'd' ||
-		node->permission[0] == 'l' || node->permission[3] == 'x' || node->permission[9] == 't')
+		node->permission[0] == 'l' || node->permission[3] == 'x'
+			|| node->permission[9] == 't')
 		check_color(node);
 	else
 		ft_putstr(node->name);

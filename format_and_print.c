@@ -33,7 +33,8 @@ void	print_reverse(t_info **list, t_ls *ls, int flags)
 		else
 		{
 			if (foo->permission[0] == 'd' ||
-				foo->permission[0] == 'l' || foo->permission[3] == 'x' || foo->permission[9] == 't')
+				foo->permission[0] == 'l' || foo->permission[3] == 'x'
+					|| foo->permission[9] == 't')
 					check_color(foo);
 			else
 				ft_putstr(foo->name);
@@ -43,7 +44,8 @@ void	print_reverse(t_info **list, t_ls *ls, int flags)
 }
 
 /*
-** listing by ascii order; recursively print linked list content from left to right
+** listing by ascii order; recursively print linked list
+** content from left to right
 */
 
 void	print_standard(t_info **list, t_ls *ls, int flags)
@@ -60,7 +62,8 @@ void	print_standard(t_info **list, t_ls *ls, int flags)
 		else
 		{
 			if (foo->permission[0] == 'd' ||
-				foo->permission[0] == 'l' || foo->permission[3] == 'x' || foo->permission[9] == 't')
+				foo->permission[0] == 'l' || foo->permission[3] == 'x'
+					|| foo->permission[9] == 't')
 					check_color(foo);
 			else
 				ft_putstr(foo->name);
@@ -70,6 +73,10 @@ void	print_standard(t_info **list, t_ls *ls, int flags)
 	print_standard(&foo->next, ls, flags);
 }
 
+/*
+** Determines what end of the linked lists to start printing data
+*/
+
 void	print(t_info **cur, t_ls *ls, int flags)
 {
 	if ((flags & OPT_r) == 8)
@@ -77,6 +84,10 @@ void	print(t_info **cur, t_ls *ls, int flags)
 	else
 		print_standard(cur, ls, flags);
 }
+
+/*
+** Gets the printing format based off of the option(s) specified by the user
+*/
 
 void	ls_print_and_format(t_ls *ls, int flags)
 {

@@ -69,6 +69,11 @@ void	save_file_info(t_info *node, t_ls *ls)
 	node->atime = ft_strsub(ctime(&ls->stat.st_atime), 4, 12);
 }
 
+/*
+** Opens and reads from a directory stream corressponding to path provided
+** and stores the information into a linked list 
+*/
+
 void	get_file_info(char *path, t_ls *ls)
 {
 	DIR	*dirp;

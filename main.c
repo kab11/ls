@@ -50,7 +50,7 @@ void	print_recursive(char *path, t_ls *ls, int flags)
 			ft_putchar('\n');
 			ft_putstr(file_path);
 			ft_putstr(":\n");
-			ft_ls(file_path, flags);
+			execute_ls(file_path, flags);
 			free(file_path);
 		}
 		cur = cur->next;
@@ -58,11 +58,11 @@ void	print_recursive(char *path, t_ls *ls, int flags)
 }
 
 /*
-** ft_ls takes care of getting file information, sorting time,
+** execute_ls takes care of getting file information, sorting time,
 ** printing, recursion, and freeing memory at the end of the program
 */
 
-void	ft_ls(char *path, int flags)
+void	execute_ls(char *path, int flags)
 {
 	t_ls	ls;
 
@@ -89,12 +89,12 @@ int	main(int argc, char **argv)
 	i = 0;
 	flags = 0;
 	if (argc == 1)
-		ft_ls(".", flags);
+		execute_ls(".", flags);
 	else if (argc > 1)
 	{
 		while (++i < argc && argv[i][0] == '-')
 			flags |= flag_handler(argv[i]);
-		(i == argc) ? ft_ls(".", flags) : parse_flags(argv + i, flags);
+		(i == argc) ? execute_ls(".", flags) : handle_file_dir(argv + i, flags);
 	}
 	return (0);
 }
